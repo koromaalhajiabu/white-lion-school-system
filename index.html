@@ -835,37 +835,54 @@
     }
 
     function saveStudentRecord() {
-        let id = document.getElementById('editStudentId').value;
-        let name = document.getElementById('stdName').value.trim();
-        let cls = document.getElementById('stdClass').value.trim();
-        let phone = document.getElementById('stdPhone').value.trim();
-        if (!name) { showToast("Enter student name."); return; }
-
-        let students;
         try {
-            students = getDB('students');
-            if (!Array.isArray(students)) throw new Error("Student data is invalid.");
-        } catch (err) {
-            console.error("White Lion could not read student records:", err);
-            showToast("Student records could not be read. No changes made. Keep your backup safe.");
-            return;
-        }
+            const idField = document.getElementById('editStudentId');
+            const nameField = document.getElementById('stdName');
+            const classField = document.getElementById('stdClass');
+            const phoneField = document.getElementById('stdPhone');
 
-        const editing = Boolean(id);
-        if (editing) {
-            let idx = students.findIndex(s => s.id === id);
-            if (idx === -1) { showToast("Student record was not found. No changes made."); return; }
-            students[idx] = Object.assign({}, students[idx], {name, cls, phone});
-        } else {
-            id = 'SL-' + Date.now();
-            students.push({ id, name, cls, phone });
-        }
-        if (saveDB('students', students)) {
-            showToast(editing ? "Student updated and saved on this device." : "Student registered and saved on this device.");
-            resetStudentForm();
+            if (!idField || !nameField || !classField || !phoneField) {
+                alert("White Lion could not find the student form. Reload the page and try again.");
+                return;
+            }
+
+            let id = idField.value;
+            const name = nameField.value.trim();
+            const cls = classField.value.trim();
+            const phone = phoneField.value.trim();
+            if (!name) {
+                alert("Enter student name.");
+                nameField.focus();
+                return;
+            }
+
+            let students = getDB('students');
+            if (!Array.isArray(students)) throw new Error("Student data is invalid.");
+
+            const editing = Boolean(id);
+            if (editing) {
+                const idx = students.findIndex(s => s.id === id);
+                if (idx === -1) {
+                    alert("Student record was not found. No changes made.");
+                    return;
+                }
+                students[idx] = Object.assign({}, students[idx], { name, cls, phone });
+            } else {
+                id = 'SL-' + Date.now();
+                students.push({ id, name, cls, phone });
+            }
+
+            if (saveDB('students', students)) {
+                alert(editing ? "Student updated and saved on this device." : "Student registered and saved on this device.");
+                resetStudentForm();
+            } else {
+                alert("SAVE FAILED. Your form has been kept. Do not clear browser data.");
+            }
+        } catch (err) {
+            console.error("White Lion student registration error:", err);
+            alert("Student registration failed: " + (err && err.message ? err.message : "unknown error") + ". Your existing records have not been intentionally deleted.");
         }
     }
-
     function editStudent(id) {
         let s = getDB('students').find(item => item.id === id);
         if (s) {
