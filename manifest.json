@@ -1,0 +1,14 @@
+{
+  "id": "./",
+  "name": "White Lion Multi-School Enterprise System",
+  "short_name": "White Lion Schools",
+  "description": "School administration for schools in Sierra Leone.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f0fdf4",
+  "theme_color": "#047857",
+  "icons": [
+    { "src": "icons/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}
