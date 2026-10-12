@@ -607,9 +607,25 @@
     }
 
     function saveDB(store, data) {
-        let prefix = getSchoolPrefix();
-        localStorage.setItem(prefix + store, JSON.stringify(data));
-        refreshAllData();
+        try {
+            if (!Array.isArray(data)) throw new Error("Invalid database data.");
+            const key = getSchoolPrefix() + store;
+            const serialized = JSON.stringify(data);
+            localStorage.setItem(key, serialized);
+            if (localStorage.getItem(key) !== serialized) throw new Error("Saved data could not be verified.");
+            refreshAllData();
+            return true;
+        } catch (err) {
+            console.error("White Lion local save failed:", err);
+            let message = "SAVE FAILED. Your form has been kept. Do not clear browser data.";
+            if (err && (err.name === "QuotaExceededError" || err.name === "NS_ERROR_DOM_QUOTA_REACHED")) {
+                message = "DEVICE STORAGE IS FULL. Your form has been kept. Export a backup and free device storage before retrying.";
+            } else if (!navigator.onLine) {
+                message = "OFFLINE SAVE FAILED. Your form has been kept; do not close or refresh this page. Check device/browser storage.";
+            }
+            showToast(message);
+            return false;
+        }
     }
 
     window.onload = function() {
@@ -825,18 +841,29 @@
         let phone = document.getElementById('stdPhone').value.trim();
         if (!name) { showToast("Enter student name."); return; }
 
-        let students = getDB('students');
-        if (id) {
+        let students;
+        try {
+            students = getDB('students');
+            if (!Array.isArray(students)) throw new Error("Student data is invalid.");
+        } catch (err) {
+            console.error("White Lion could not read student records:", err);
+            showToast("Student records could not be read. No changes made. Keep your backup safe.");
+            return;
+        }
+
+        const editing = Boolean(id);
+        if (editing) {
             let idx = students.findIndex(s => s.id === id);
-            if (idx !== -1) { students[idx] = Object.assign({}, students[idx], {name, cls, phone}); }
-            showToast("Student updated successfully!");
+            if (idx === -1) { showToast("Student record was not found. No changes made."); return; }
+            students[idx] = Object.assign({}, students[idx], {name, cls, phone});
         } else {
             id = 'SL-' + Date.now();
             students.push({ id, name, cls, phone });
-            showToast("Student registered successfully!");
         }
-        saveDB('students', students);
-        resetStudentForm();
+        if (saveDB('students', students)) {
+            showToast(editing ? "Student updated and saved on this device." : "Student registered and saved on this device.");
+            resetStudentForm();
+        }
     }
 
     function editStudent(id) {
