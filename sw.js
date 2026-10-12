@@ -1,4 +1,4 @@
-const CACHE_NAME = 'white-lion-school-system-v1';
+const CACHE_NAME = 'white-lion-school-system-v2';
 const CORE_ASSETS = ['./', './index.html', './manifest.json', './icons/icon.svg'];
 self.addEventListener('install', (event) => {
   event.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(CORE_ASSETS)));
