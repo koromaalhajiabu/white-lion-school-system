@@ -616,7 +616,14 @@ function useLocalStorage(key, fallback) {
         try {
             localStorage.setItem(key, JSON.stringify(value));
         }
-        catch (e) { /* storage blocked or full */ }
+        catch (e) {
+            // Never fail silently: the user must know if a record could not be saved.
+            try {
+                window.dispatchEvent(new CustomEvent('wl-storage-error', {
+                    detail: { key, message: 'A record could not be saved on this device. Export a backup immediately and free device storage before continuing.' }
+                }));
+            } catch (_) {}
+        }
     }, [key, value]);
     return [value, setValue];
 }
@@ -1768,6 +1775,16 @@ function Workspace({ session, data, user, onLogout }) {
     const tabs = ROLES[role].tabs.filter((t) => t !== 'staff' || mode === 'shared');
     const [activeTab, setActiveTab] = useState('dashboard');
     const [toast, setToast] = useState('');
+    const [storageWarning, setStorageWarning] = useState('');
+    useEffect(() => {
+        const onStorageError = (event) => setStorageWarning(
+            event && event.detail && event.detail.message
+                ? event.detail.message
+                : 'A record could not be saved on this device. Export a backup immediately.'
+        );
+        window.addEventListener('wl-storage-error', onStorageError);
+        return () => window.removeEventListener('wl-storage-error', onStorageError);
+    }, []);
     const [doc, setDoc] = useState(null);
     const [profileId, setProfileId] = useState(null);
     const toastTimer = useRef(null);
@@ -1840,6 +1857,7 @@ function Workspace({ session, data, user, onLogout }) {
                             React.createElement("strong", null, mode === 'shared' ? name : ROLES[role].label),
                             React.createElement("span", null, ROLES[role].label)))),
                 data.error && React.createElement("div", { className: "banner", role: "alert" }, data.error),
+                storageWarning && React.createElement("div", { className: "banner", role: "alert" }, storageWarning),
                 activeTab === 'dashboard' && (React.createElement(DashboardPage, { role: role, students: students, fees: fees, grades: grades, fx: fx, settings: settings, history: history, notices: data.notices, canPost: isAdmin, onPost: (text) => act(() => actions.addNotice(text), 'Announcement posted.'), onDeleteNotice: (id) => act(() => actions.deleteNotice(id), 'Announcement removed.') })),
                 activeTab === 'students' && (React.createElement(StudentsPage, { students: students, fx: fx, onAddStudent: (s) => act(() => actions.addStudent(s), (adm) => `${s.name} registered as ${adm}.`), onLoadSamples: mode === 'shared' ? () => act(actions.loadSamples, 'Sample students loaded.') : null, onOpenProfile: (s) => setProfileId(s.id), onExport: exportStudents })),
                 activeTab === 'attendance' && (React.createElement(AttendancePage, { students: students, attDate: data.attDate, setAttDate: data.setAttDate, attMarks: data.attMarks, onMarkMany: (marks, msg) => act(() => actions.markAttendance(data.attDate, marks), msg) })),
