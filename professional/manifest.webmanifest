@@ -1,0 +1,18 @@
+{
+  "name": "White Lion School Management System — Professional Edition",
+  "short_name": "White Lion Pro",
+  "description": "School management portal for student records, attendance, grades, fees and reports.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f3f5f9",
+  "theme_color": "#102947",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
