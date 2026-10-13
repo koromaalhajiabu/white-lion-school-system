@@ -67,6 +67,21 @@ An operation is removed from the pending queue only after the server confirms it
 - If a pilot fails, disable uploads first, preserve local records and the outbox, export a fresh backup, and investigate using synthetic copies.
 - Never resolve a failed migration by clearing browser storage or dropping production tables.
 
+
+## Existing portal backup feature (verified in source, not runtime-tested here)
+
+The current `professional/index.html` already includes a **Data Safety & Backup** panel with JSON download and restore controls. The restore path validates the recognized backup format and fields, asks for confirmation, and attempts to download a pre-restore safety copy before writing imported keys. This is useful protection, but source inspection is not proof that every browser/device successfully downloads or restores a backup.
+
+Before relying on it for real school operations, manually verify with a **synthetic test profile**:
+1. Add a clearly fictional test student and one related attendance/grade/fee record.
+2. Download the JSON backup and confirm it exists in Downloads.
+3. Restore it only into a separate empty test browser profile/device.
+4. Compare record counts and totals, then reload and check them again.
+5. Test a malformed JSON file and cancel a restore; existing records should remain unchanged.
+6. Keep the original backup untouched until the restored copy has been checked.
+
+Do not use the production profile for destructive restore tests. The current backup is a device/browser export, not a cloud backup, and restoring on another device does not create ongoing synchronization.
+
 ## Current limitation
 
 The live portal remains a localStorage-based app. This design does not itself provide cloud backup, multi-device synchronization, authentication, or automatic recovery. Those require implementation and tests in later reviewed changes.
