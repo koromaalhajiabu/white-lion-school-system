@@ -460,6 +460,7 @@ const DEFAULT_SETTINGS = {
     term: 'Term 1',
     principal: '',
     feeStructure: { 'Tuition Fee': 0, 'Development Levy': 0, 'Exam Fee': 0 },
+    subjects: [ { name: 'Mathematics', active: true }, { name: 'English Language', active: true }, { name: 'Integrated Science', active: true }, { name: 'Social Studies', active: true } ],
 };
 /* Sample records from the original system; loaded only when an administrator asks. */
 const SEED = {
@@ -511,7 +512,7 @@ function newReceiptNo(fees) {
 }
 function mergeSettings(raw) {
     const r = raw || {};
-    return { ...DEFAULT_SETTINGS, ...r, feeStructure: { ...DEFAULT_SETTINGS.feeStructure, ...(r.feeStructure || {}) } };
+    return { ...DEFAULT_SETTINGS, ...r, feeStructure: { ...DEFAULT_SETTINGS.feeStructure, ...(r.feeStructure || {}) }, subjects: Array.isArray(r.subjects) ? r.subjects : DEFAULT_SETTINGS.subjects };
 }
 const totalDue = (settings) => Object.values(settings.feeStructure).reduce((a, b) => a + (Number(b) || 0), 0);
 // Fee position for every student: what is owed, what was paid, what remains.
@@ -1553,27 +1554,31 @@ function AttendancePage({ students, attDate, setAttDate, attMarks, onMarkMany })
         }),
         list.length === 0 && React.createElement(EmptyState, null, "No students match your search.")))));
 }
-function GradesPage({ students, grades, onAddGrade }) {
+function GradesPage({ students, grades, settings, onAddGrade }) {
+    const activeSubjects = (settings.subjects || []).filter((subject) => subject.active).map((subject) => subject.name);
     const handleSubmit = async (e) => {
         e.preventDefault();
         const f = e.target;
         const student = students.find((s) => sameId(s.id, f.gstudent.value));
-        if (!student)
+        const subject = f.gsubject.value;
+        if (!student || !activeSubjects.includes(subject)) {
+            alert("Please select an active subject managed in School Settings.");
             return;
-        const ok = await onAddGrade({ studentId: student.id, subject: f.gsubject.value.trim(), score: Number(f.gscore.value) });
+        }
+        const ok = await onAddGrade({ studentId: student.id, subject, score: Number(f.gscore.value) });
         if (ok)
             f.reset();
     };
     const nameOf = (id) => (students.find((s) => sameId(s.id, id)) || {}).name || 'Unknown';
     const recent = [...grades].reverse().slice(0, 8);
     return (React.createElement("div", null,
-        React.createElement(Card, { title: "Enter a grade", description: "Scores are out of 100 and graded A to F automatically." }, students.length === 0 ? (React.createElement(EmptyState, null, "No students yet. An administrator can register them in the Student Directory.")) : (React.createElement("form", { onSubmit: handleSubmit, className: "form-grid" },
+        React.createElement(Card, { title: "Enter a grade", description: "Scores are out of 100 and graded A to F automatically." }, students.length === 0 ? (React.createElement(EmptyState, null, "No students yet. An administrator can register them in the Student Directory.")) : activeSubjects.length === 0 ? (React.createElement(EmptyState, null, "No active subjects are available. An administrator must add or reactivate subjects in School Settings.")) : (React.createElement("form", { onSubmit: handleSubmit, className: "form-grid" },
             React.createElement("select", { id: "gstudent", name: "gstudent", "aria-label": "Student" }, students.map((s) => React.createElement("option", { key: s.id, value: s.id },
                 s.name,
                 " (",
                 s.admissionNumber,
                 ")"))),
-            React.createElement("input", { id: "gsubject", type: "text", name: "gsubject", placeholder: "Subject", required: true, "aria-label": "Subject" }),
+            React.createElement("select", { id: "gsubject", name: "gsubject", required: true, "aria-label": "Subject" }, React.createElement("option", { value: "" }, "Select active subject"), activeSubjects.map((subject) => React.createElement("option", { key: subject, value: subject }, subject))),
             React.createElement("input", { id: "gscore", type: "number", name: "gscore", placeholder: "Score (%)", min: "0", max: "100", required: true, "aria-label": "Score" }),
             React.createElement("button", { type: "submit", className: "btn btn-primary" }, "Save grade")))),
         React.createElement(Card, { title: "Recently entered" }, recent.length === 0 ? React.createElement(EmptyState, null, "No grades entered yet.") : (React.createElement("div", { className: "table-wrap" },
@@ -1694,6 +1699,12 @@ function ReportsPage({ students, grades, fees, fx, onOpenReport, onOpenReceipt }
         filter.filtered.length === 0 && React.createElement(EmptyState, null, "No students match your search.")))));
 }
 function SettingsPage({ settings, onSave }) {
+    const [subjects, setSubjects] = useState(() => (Array.isArray(settings.subjects) ? settings.subjects : DEFAULT_SETTINGS.subjects).map((s) => typeof s === 'string' ? { name: s, active: true } : s));
+    const [newSubject, setNewSubject] = useState('');
+    const [subjectMessage, setSubjectMessage] = useState('');
+    const saveSubjects = async (next) => { setSubjects(next); await onSave({ ...settings, subjects: next }); };
+    const addSubject = async (e) => { e.preventDefault(); const name = newSubject.trim(); if (!name) return; if (subjects.some((s) => s.name.toLowerCase() === name.toLowerCase())) { setSubjectMessage('That subject already exists.'); return; } await saveSubjects([...subjects, { name, active: true }]); setNewSubject(''); setSubjectMessage(`${name} added.`); };
+    const renameSubject = async (subject) => { const name = window.prompt('Enter the new subject name:', subject.name); if (!name || !name.trim() || name.trim() === subject.name) return; const clean = name.trim(); if (subjects.some((s) => s.name.toLowerCase() === clean.toLowerCase() && s.name !== subject.name)) { setSubjectMessage('That subject already exists.'); return; } await saveSubjects(subjects.map((s) => s.name === subject.name ? { ...s, name: clean } : s)); setSubjectMessage(`Subject renamed to ${clean}. Existing grade entries keep their recorded subject name.`); };
     const handleSubmit = async (e) => {
         e.preventDefault();
         const f = e.target;
@@ -1705,6 +1716,7 @@ function SettingsPage({ settings, onSave }) {
             term: f.term.value,
             principal: f.principal.value.trim(),
             feeStructure,
+            subjects,
         });
     };
     return (React.createElement("form", { onSubmit: handleSubmit, key: JSON.stringify(settings) },
@@ -1729,6 +1741,19 @@ function SettingsPage({ settings, onSave }) {
             React.createElement("p", { className: "card-desc total-line" },
                 "Total due per student: ",
                 React.createElement("strong", null, formatMoney(totalDue(settings))))),
+        React.createElement(Card, { title: "Subject management", description: "Add, rename, or archive subjects for this school. Archived subjects remain in historical records." },
+            React.createElement("form", { className: "notice-form", onSubmit: addSubject },
+                React.createElement("input", { type: "text", value: newSubject, onChange: (e) => setNewSubject(e.target.value), placeholder: "New subject name", "aria-label": "New subject name", maxLength: 80, required: true }),
+                React.createElement("button", { type: "submit", className: "btn btn-primary btn-sm" }, "Add subject")),
+            subjectMessage && React.createElement("p", { className: "card-desc", role: "status" }, subjectMessage),
+            React.createElement("div", { className: "list-stack" }, subjects.map((subject) => React.createElement("div", { className: "list-item", key: subject.name },
+                React.createElement("div", { className: "person" },
+                    React.createElement("div", null,
+                        React.createElement("div", { className: "title" }, subject.name),
+                        React.createElement("div", { className: "meta" }, subject.active ? "Active subject" : "Archived — historical records preserved"))),
+                React.createElement("div", { className: "row-actions" },
+                    React.createElement("button", { type: "button", className: "btn btn-quiet btn-sm", onClick: () => renameSubject(subject) }, "Rename"),
+                    React.createElement("button", { type: "button", className: subject.active ? "btn btn-danger-quiet btn-sm" : "btn btn-success btn-sm", onClick: () => { const next = subjects.map((s) => s.name === subject.name ? { ...s, active: !s.active } : s); saveSubjects(next); setSubjectMessage(subject.active ? subject.name + " archived; existing grades are preserved." : subject.name + " reactivated."); } }, subject.active ? "Archive" : "Reactivate"))))),
         React.createElement("button", { type: "submit", className: "btn btn-primary" }, "Save settings")));
 }
 function RequestRow({ request, name, onApprove, onDecline }) {
@@ -1861,7 +1886,7 @@ function Workspace({ session, data, user, onLogout }) {
                 activeTab === 'dashboard' && (React.createElement(DashboardPage, { role: role, students: students, fees: fees, grades: grades, fx: fx, settings: settings, history: history, notices: data.notices, canPost: isAdmin, onPost: (text) => act(() => actions.addNotice(text), 'Announcement posted.'), onDeleteNotice: (id) => act(() => actions.deleteNotice(id), 'Announcement removed.') })),
                 activeTab === 'students' && (React.createElement(StudentsPage, { students: students, fx: fx, onAddStudent: (s) => act(() => actions.addStudent(s), (adm) => `${s.name} registered as ${adm}.`), onLoadSamples: mode === 'shared' ? () => act(actions.loadSamples, 'Sample students loaded.') : null, onOpenProfile: (s) => setProfileId(s.id), onExport: exportStudents })),
                 activeTab === 'attendance' && (React.createElement(AttendancePage, { students: students, attDate: data.attDate, setAttDate: data.setAttDate, attMarks: data.attMarks, onMarkMany: (marks, msg) => act(() => actions.markAttendance(data.attDate, marks), msg) })),
-                activeTab === 'grades' && (React.createElement(GradesPage, { students: students, grades: grades, onAddGrade: (g) => act(() => actions.addGrade(g), 'Grade recorded.') })),
+                activeTab === 'grades' && (React.createElement(GradesPage, { students: students, grades: grades, settings: settings, onAddGrade: (g) => act(() => actions.addGrade(g), 'Grade recorded.') })),
                 activeTab === 'fees' && (React.createElement(FeesPage, { students: students, fees: fees, fx: fx, settings: settings, onPayFee: (p) => act(() => actions.addFee(p), (no) => `Payment logged. Receipt: ${no}`), onOpenReceipt: (s, f) => setDoc(buildReceipt(s, f)), onExport: exportFees })),
                 activeTab === 'reports' && (React.createElement(ReportsPage, { students: students, grades: grades, fees: fees, fx: fx, onOpenReport: (s) => setDoc(buildReport(s)), onOpenReceipt: (s, f) => setDoc(buildReceipt(s, f)) })),
                 activeTab === 'settings' && (React.createElement(SettingsPage, { settings: settings, onSave: (s) => act(() => actions.saveSettings(s), 'Settings saved.') })),
