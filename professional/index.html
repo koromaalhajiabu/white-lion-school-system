@@ -1554,27 +1554,31 @@ function AttendancePage({ students, attDate, setAttDate, attMarks, onMarkMany })
         }),
         list.length === 0 && React.createElement(EmptyState, null, "No students match your search.")))));
 }
-function GradesPage({ students, grades, onAddGrade }) {
+function GradesPage({ students, grades, settings, onAddGrade }) {
+    const activeSubjects = (settings.subjects || []).filter((subject) => subject.active).map((subject) => subject.name);
     const handleSubmit = async (e) => {
         e.preventDefault();
         const f = e.target;
         const student = students.find((s) => sameId(s.id, f.gstudent.value));
-        if (!student)
+        const subject = f.gsubject.value;
+        if (!student || !activeSubjects.includes(subject)) {
+            alert("Please select an active subject managed in School Settings.");
             return;
-        const ok = await onAddGrade({ studentId: student.id, subject: f.gsubject.value.trim(), score: Number(f.gscore.value) });
+        }
+        const ok = await onAddGrade({ studentId: student.id, subject, score: Number(f.gscore.value) });
         if (ok)
             f.reset();
     };
     const nameOf = (id) => (students.find((s) => sameId(s.id, id)) || {}).name || 'Unknown';
     const recent = [...grades].reverse().slice(0, 8);
     return (React.createElement("div", null,
-        React.createElement(Card, { title: "Enter a grade", description: "Scores are out of 100 and graded A to F automatically." }, students.length === 0 ? (React.createElement(EmptyState, null, "No students yet. An administrator can register them in the Student Directory.")) : (React.createElement("form", { onSubmit: handleSubmit, className: "form-grid" },
+        React.createElement(Card, { title: "Enter a grade", description: "Scores are out of 100 and graded A to F automatically." }, students.length === 0 ? (React.createElement(EmptyState, null, "No students yet. An administrator can register them in the Student Directory.")) : activeSubjects.length === 0 ? (React.createElement(EmptyState, null, "No active subjects are available. An administrator must add or reactivate subjects in School Settings.")) : (React.createElement("form", { onSubmit: handleSubmit, className: "form-grid" },
             React.createElement("select", { id: "gstudent", name: "gstudent", "aria-label": "Student" }, students.map((s) => React.createElement("option", { key: s.id, value: s.id },
                 s.name,
                 " (",
                 s.admissionNumber,
                 ")"))),
-            React.createElement("input", { id: "gsubject", type: "text", name: "gsubject", placeholder: "Subject", required: true, "aria-label": "Subject" }),
+            React.createElement("select", { id: "gsubject", name: "gsubject", required: true, "aria-label": "Subject" }, React.createElement("option", { value: "" }, "Select active subject"), activeSubjects.map((subject) => React.createElement("option", { key: subject, value: subject }, subject))),
             React.createElement("input", { id: "gscore", type: "number", name: "gscore", placeholder: "Score (%)", min: "0", max: "100", required: true, "aria-label": "Score" }),
             React.createElement("button", { type: "submit", className: "btn btn-primary" }, "Save grade")))),
         React.createElement(Card, { title: "Recently entered" }, recent.length === 0 ? React.createElement(EmptyState, null, "No grades entered yet.") : (React.createElement("div", { className: "table-wrap" },
@@ -1882,7 +1886,7 @@ function Workspace({ session, data, user, onLogout }) {
                 activeTab === 'dashboard' && (React.createElement(DashboardPage, { role: role, students: students, fees: fees, grades: grades, fx: fx, settings: settings, history: history, notices: data.notices, canPost: isAdmin, onPost: (text) => act(() => actions.addNotice(text), 'Announcement posted.'), onDeleteNotice: (id) => act(() => actions.deleteNotice(id), 'Announcement removed.') })),
                 activeTab === 'students' && (React.createElement(StudentsPage, { students: students, fx: fx, onAddStudent: (s) => act(() => actions.addStudent(s), (adm) => `${s.name} registered as ${adm}.`), onLoadSamples: mode === 'shared' ? () => act(actions.loadSamples, 'Sample students loaded.') : null, onOpenProfile: (s) => setProfileId(s.id), onExport: exportStudents })),
                 activeTab === 'attendance' && (React.createElement(AttendancePage, { students: students, attDate: data.attDate, setAttDate: data.setAttDate, attMarks: data.attMarks, onMarkMany: (marks, msg) => act(() => actions.markAttendance(data.attDate, marks), msg) })),
-                activeTab === 'grades' && (React.createElement(GradesPage, { students: students, grades: grades, onAddGrade: (g) => act(() => actions.addGrade(g), 'Grade recorded.') })),
+                activeTab === 'grades' && (React.createElement(GradesPage, { students: students, grades: grades, settings: settings, onAddGrade: (g) => act(() => actions.addGrade(g), 'Grade recorded.') })),
                 activeTab === 'fees' && (React.createElement(FeesPage, { students: students, fees: fees, fx: fx, settings: settings, onPayFee: (p) => act(() => actions.addFee(p), (no) => `Payment logged. Receipt: ${no}`), onOpenReceipt: (s, f) => setDoc(buildReceipt(s, f)), onExport: exportFees })),
                 activeTab === 'reports' && (React.createElement(ReportsPage, { students: students, grades: grades, fees: fees, fx: fx, onOpenReport: (s) => setDoc(buildReport(s)), onOpenReceipt: (s, f) => setDoc(buildReceipt(s, f)) })),
                 activeTab === 'settings' && (React.createElement(SettingsPage, { settings: settings, onSave: (s) => act(() => actions.saveSettings(s), 'Settings saved.') })),
