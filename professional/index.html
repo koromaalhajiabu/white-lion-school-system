@@ -1,0 +1,2070 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#102947">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<meta name="description" content="White Lion School Management System — professional student, attendance, grades, fees and reports management.">
+<title>White Lion School Management System | Professional Edition</title>
+<!-- System font fallbacks keep the portal readable without external font downloads. -->
+<style>
+/* Layout: deep-navy sidebar with gold monogram, cool-grey workspace, blue actions; sidebar becomes a top bar on phones. */
+:root {
+    --bg: #f3f5f9;
+    --surface: #ffffff;
+    --surface-2: #f7f9fc;
+    --ink: #172033;
+    --ink-strong: #0b1426;
+    --muted: #5b6980;
+    --line: #e2e7ef;
+    --accent: #15345b;
+    --accent-ink: #ffffff;
+    --accent-soft: #e8eef6;
+    --gold: #b88a2b;
+    --gold-soft: #faf1dc;
+    --good: #0b8f63;
+    --good-soft: #def5ec;
+    --good-solid: #087a54;
+    --warn: #a55f00;
+    --warn-soft: #fdf0d5;
+    --bad: #c62f2f;
+    --bad-soft: #fbe6e6;
+    --bad-solid: #c62f2f;
+    --on-solid: #ffffff;
+    --dark-btn: #14213d;
+    --field: #ffffff;
+    --field-line: #c9d2e0;
+    --scrim: rgba(8, 14, 28, 0.62);
+    --shadow: 0 1px 2px rgba(16, 24, 40, .05), 0 1px 3px rgba(16, 24, 40, .06);
+    --nav-bg: #0c1830;
+    --nav-line: rgba(255, 255, 255, .08);
+    --nav-ink: #a3b3d1;
+    --nav-hover: rgba(255, 255, 255, .06);
+    --nav-active: rgba(91, 140, 255, .18);
+    --nav-gold: #e2b455;
+    --paper: #ffffff;
+    --paper-ink: #1d2433;
+    --paper-muted: #5a6577;
+    --paper-line: #c9d1de;
+    --paper-head: #eef2f8;
+    --font-display: 'Manrope', 'Segoe UI', system-ui, sans-serif;
+    --font-body: 'Public Sans', 'Segoe UI', system-ui, sans-serif;
+    --font-mono: 'IBM Plex Mono', ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+        --bg: #0a101d;
+        --surface: #111a2c;
+        --surface-2: #16213a;
+        --ink: #d5ddec;
+        --ink-strong: #f2f5fb;
+        --muted: #8c9bb5;
+        --line: #233050;
+        --accent: #5b8cff;
+        --accent-ink: #08142e;
+        --accent-soft: #16264d;
+        --gold: #e2b455;
+        --gold-soft: #3a2d10;
+        --good: #3ddba0;
+        --good-soft: #0f3a2c;
+        --good-solid: #34c994;
+        --warn: #f0b24b;
+        --warn-soft: #3a2a0c;
+        --bad: #ff7a7a;
+        --bad-soft: #471d22;
+        --bad-solid: #ff8a8a;
+        --on-solid: #08121f;
+        --dark-btn: #2a3a5e;
+        --field: #0d1527;
+        --field-line: #34456b;
+        --scrim: rgba(2, 6, 14, 0.78);
+        --shadow: 0 1px 2px rgba(0, 0, 0, .3);
+        --nav-bg: #070d1b;
+        color-scheme: dark;
+    }
+}
+:root[data-theme="dark"] {
+    --bg: #0a101d;
+    --surface: #111a2c;
+    --surface-2: #16213a;
+    --ink: #d5ddec;
+    --ink-strong: #f2f5fb;
+    --muted: #8c9bb5;
+    --line: #233050;
+    --accent: #5b8cff;
+    --accent-ink: #08142e;
+    --accent-soft: #16264d;
+    --gold: #e2b455;
+    --gold-soft: #3a2d10;
+    --good: #3ddba0;
+    --good-soft: #0f3a2c;
+    --good-solid: #34c994;
+    --warn: #f0b24b;
+    --warn-soft: #3a2a0c;
+    --bad: #ff7a7a;
+    --bad-soft: #471d22;
+    --bad-solid: #ff8a8a;
+    --on-solid: #08121f;
+    --dark-btn: #2a3a5e;
+    --field: #0d1527;
+    --field-line: #34456b;
+    --scrim: rgba(2, 6, 14, 0.78);
+    --shadow: 0 1px 2px rgba(0, 0, 0, .3);
+    --nav-bg: #070d1b;
+    color-scheme: dark;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+body { background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 14px; line-height: 1.5; overflow: hidden; }
+#root { height: 100%; }
+button, input, select { font-family: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.icon { flex-shrink: 0; }
+.num { text-align: right; font-variant-numeric: tabular-nums; }
+.mono { font-family: var(--font-mono); font-size: 12.5px; white-space: nowrap; }
+.strong { font-weight: 600; color: var(--ink-strong); }
+
+.app-container { display: flex; height: 100%; width: 100%; }
+
+/* Brand mark */
+.monogram { display: inline-grid; place-items: center; width: 40px; height: 40px; border-radius: 10px; background: linear-gradient(145deg, #1d3263, #0c1830); color: #e2b455; border: 1px solid rgba(226, 180, 85, .55); font-family: var(--font-display); font-weight: 800; font-size: 15px; letter-spacing: .5px; flex-shrink: 0; }
+.monogram-sm { width: 32px; height: 32px; font-size: 12px; }
+
+/* Sidebar */
+aside { width: 256px; background: var(--nav-bg); color: var(--nav-ink); display: flex; flex-direction: column; justify-content: space-between; flex-shrink: 0; }
+.brand { display: flex; align-items: center; gap: 12px; padding: 22px 20px 18px; border-bottom: 1px solid var(--nav-line); }
+.brand-text { min-width: 0; }
+.brand h1 { font-family: var(--font-display); font-size: 14px; font-weight: 700; color: #fff; line-height: 1.25; overflow-wrap: anywhere; }
+.brand p { font-size: 11px; color: var(--nav-gold); margin-top: 2px; letter-spacing: .3px; }
+.nav-links { padding: 14px 12px; display: flex; flex-direction: column; gap: 2px; overflow-y: auto; }
+.nav-btn { display: flex; align-items: center; gap: 12px; background: transparent; border: none; color: var(--nav-ink); text-align: left; padding: 10px 12px; border-radius: 8px; font-size: 13.5px; font-weight: 500; cursor: pointer; transition: background .15s, color .15s; width: 100%; }
+.nav-btn:hover { background: var(--nav-hover); color: #fff; }
+.nav-btn.active { background: var(--nav-active); color: #fff; font-weight: 600; }
+.nav-btn.active .icon { color: var(--nav-gold); }
+.sidebar-footer { padding: 14px 16px 16px; border-top: 1px solid var(--nav-line); font-size: 11.5px; }
+.sync-box { display: flex; flex-direction: column; gap: 2px; padding: 4px 4px 10px; }
+.sync-state { display: flex; align-items: center; gap: 8px; color: #dbe5f8; font-weight: 600; }
+.sync-note { color: var(--nav-ink); padding-left: 16px; }
+.status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+.status-dot.online { background: #34d399; box-shadow: 0 0 0 3px rgba(52, 211, 153, .18); }
+.status-dot.offline { background: #f59e0b; }
+.logout-btn { background: none; border: 1px solid var(--nav-line); color: #fca5a5; text-align: center; padding: 8px; cursor: pointer; font-weight: 600; width: 100%; border-radius: 8px; font-size: 12.5px; }
+.logout-btn:hover { background: var(--nav-hover); }
+
+/* Workspace */
+main { flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: space-between; padding: 28px 36px 20px; overflow-y: auto; background: var(--bg); }
+.main-inner { width: 100%; max-width: 1180px; margin: 0 auto; }
+header { display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; margin-bottom: 24px; }
+header h2 { font-family: var(--font-display); font-size: 24px; font-weight: 800; letter-spacing: -.3px; color: var(--ink-strong); line-height: 1.2; }
+header p { font-size: 13px; color: var(--muted); margin-top: 2px; }
+.user-chip { display: flex; align-items: center; gap: 10px; background: var(--surface); border: 1px solid var(--line); border-radius: 999px; padding: 5px 16px 5px 5px; box-shadow: var(--shadow); }
+.user-chip div { display: flex; flex-direction: column; line-height: 1.2; }
+.user-chip strong { font-size: 13px; color: var(--ink-strong); }
+.user-chip span { font-size: 11px; color: var(--muted); }
+footer.main-footer { text-align: center; font-size: 11.5px; color: var(--muted); padding-top: 18px; margin-top: 28px; border-top: 1px solid var(--line); }
+.avatar { display: inline-grid; place-items: center; width: 32px; height: 32px; border-radius: 50%; background: var(--accent-soft); color: var(--accent); font-family: var(--font-display); font-weight: 700; font-size: 12px; flex-shrink: 0; }
+.avatar-lg { width: 52px; height: 52px; font-size: 18px; }
+.person { display: flex; align-items: center; gap: 12px; min-width: 0; }
+
+/* Cards */
+.card { background: var(--surface); padding: 22px 24px; border-radius: 12px; border: 1px solid var(--line); box-shadow: var(--shadow); margin-bottom: 20px; min-width: 0; }
+.card-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; }
+.card-title { font-family: var(--font-display); font-size: 15.5px; font-weight: 700; color: var(--ink-strong); }
+.card-desc { font-size: 12.5px; color: var(--muted); margin-top: 2px; }
+.card-action { display: flex; align-items: center; }
+.total-line { margin-top: 12px; }
+.notice-box { background: var(--accent-soft); border: 1px solid var(--line); border-radius: 12px; padding: 18px 20px; }
+.notice-box h4 { color: var(--ink-strong); font-family: var(--font-display); font-size: 13.5px; margin-bottom: 4px; }
+.notice-box p { color: var(--ink); font-size: 12.5px; line-height: 1.65; }
+.section-label { font-family: var(--font-display); font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .6px; color: var(--muted); margin: 22px 0 8px; }
+
+/* Dashboard */
+.kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 16px; margin-bottom: 20px; }
+.kpi { display: flex; gap: 14px; align-items: flex-start; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 18px; box-shadow: var(--shadow); min-width: 0; }
+.kpi-icon { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 10px; background: var(--accent-soft); color: var(--accent); flex-shrink: 0; }
+.kpi-icon.tone-good { background: var(--good-soft); color: var(--good); }
+.kpi-icon.tone-gold { background: var(--gold-soft); color: var(--gold); }
+.kpi-icon.tone-warn { background: var(--warn-soft); color: var(--warn); }
+.kpi-body { display: flex; flex-direction: column; min-width: 0; }
+.kpi-label { font-size: 12px; font-weight: 600; color: var(--muted); }
+.kpi-value { font-family: var(--font-display); font-size: 24px; font-weight: 800; color: var(--ink-strong); line-height: 1.2; margin-top: 2px; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.kpi-sub { font-size: 11.5px; color: var(--muted); margin-top: 2px; }
+.dash-grid { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: 20px; }
+.dash-grid-even { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+.chart { width: 100%; height: auto; display: block; }
+.chart-grid { stroke: var(--line); stroke-width: 1; }
+.chart-text { fill: var(--muted); font-size: 10.5px; font-family: var(--font-body); }
+.chart-bar { fill: var(--accent); opacity: .55; }
+.chart-bar-now { opacity: 1; }
+.hbars { display: flex; flex-direction: column; gap: 14px; }
+.hbar-row { display: grid; grid-template-columns: minmax(80px, 140px) 1fr auto; gap: 12px; align-items: center; font-size: 12.5px; }
+.hbar-label { color: var(--ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.hbar-track { background: var(--surface-2); border-radius: 6px; height: 10px; overflow: hidden; }
+.hbar-fill { height: 100%; background: var(--accent); border-radius: 6px; min-width: 3px; }
+.hbar-value { font-variant-numeric: tabular-nums; color: var(--ink-strong); font-weight: 600; text-align: right; }
+.notice-form { display: flex; gap: 8px; margin-bottom: 14px; }
+.notice-list { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+.notice-list li { display: flex; gap: 12px; align-items: flex-start; color: var(--gold); }
+.notice-list li div { flex: 1; min-width: 0; }
+.notice-list p { color: var(--ink); font-size: 13px; overflow-wrap: anywhere; }
+.notice-list span { color: var(--muted); font-size: 11.5px; }
+.icon-btn { background: none; border: none; color: var(--muted); cursor: pointer; padding: 4px; border-radius: 6px; }
+.icon-btn:hover { background: var(--surface-2); color: var(--bad); }
+
+/* Forms and buttons */
+.form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; align-items: center; }
+.field-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
+.field { display: flex; flex-direction: column; gap: 6px; }
+.field span { font-size: 12px; font-weight: 600; color: var(--muted); }
+input, select { padding: 10px 12px; border: 1px solid var(--field-line); border-radius: 8px; font-size: 13.5px; background: var(--field); color: var(--ink); width: 100%; min-width: 0; }
+input::placeholder { color: var(--muted); opacity: .8; }
+input:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 22%, transparent); outline: none; }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; border: 1px solid transparent; padding: 10px 16px; border-radius: 8px; font-size: 13.5px; font-weight: 600; cursor: pointer; transition: filter .15s, background .15s; white-space: nowrap; }
+.btn:hover { filter: brightness(.94); }
+.btn:disabled { opacity: .55; cursor: default; }
+.btn-sm { padding: 7px 12px; font-size: 12.5px; }
+.btn-block { width: 100%; }
+.btn-primary { background: var(--accent); color: var(--accent-ink); }
+.btn-success { background: var(--good-solid); color: var(--on-solid); }
+.btn-danger { background: var(--bad-solid); color: var(--on-solid); }
+.btn-dark { background: var(--dark-btn); color: #fff; }
+.btn-quiet { background: var(--surface); color: var(--ink); border-color: var(--field-line); }
+.btn-quiet:hover { background: var(--surface-2); filter: none; }
+.btn-danger-quiet { background: var(--surface); color: var(--bad); border-color: var(--field-line); }
+.span-all { grid-column: 1 / -1; }
+.inline-select { width: auto; padding: 7px 10px; font-size: 13px; }
+.date-field { display: flex; align-items: center; gap: 8px; font-size: 12.5px; font-weight: 600; color: var(--muted); }
+.date-field input { width: auto; padding: 7px 10px; }
+.filter-bar { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 14px; }
+.search-field { display: flex; align-items: center; gap: 8px; flex: 1 1 240px; min-width: 0; background: var(--field); border: 1px solid var(--field-line); border-radius: 8px; padding: 0 12px; color: var(--muted); }
+.search-field input { border: none; box-shadow: none; padding: 9px 0; background: transparent; }
+.search-field:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 22%, transparent); }
+.search-field input:focus { box-shadow: none; }
+
+/* Tables, badges, rows */
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; }
+th { color: var(--muted); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .6px; padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--line); white-space: nowrap; background: var(--surface-2); }
+th.num { text-align: right; }
+td { padding: 11px 12px; font-size: 13.5px; border-bottom: 1px solid var(--line); color: var(--ink); vertical-align: middle; }
+tbody tr:last-child td { border-bottom: none; }
+table.clickable tbody tr { cursor: pointer; }
+table.clickable tbody tr:hover td, table.clickable tbody tr:focus-visible td { background: var(--surface-2); }
+.badge { display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; border-radius: 999px; font-size: 11.5px; font-weight: 600; white-space: nowrap; }
+.badge::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.badge.success { background: var(--good-soft); color: var(--good); }
+.badge.danger { background: var(--bad-soft); color: var(--bad); }
+.badge.warn { background: var(--warn-soft); color: var(--warn); }
+.list-item { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; padding: 12px 14px; border: 1px solid var(--line); border-radius: 10px; margin-bottom: 8px; background: var(--surface); }
+.list-item .title { font-weight: 600; font-size: 13.5px; color: var(--ink-strong); }
+.list-item .meta { font-size: 12px; color: var(--muted); margin-top: 2px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.muted-inline { font-weight: 400; color: var(--muted); font-family: var(--font-mono); font-size: 11.5px; margin-left: 6px; }
+.text-good { color: var(--good); font-weight: 600; }
+.text-bad { color: var(--bad); font-weight: 600; }
+.row-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.seg { display: inline-flex; border: 1px solid var(--field-line); border-radius: 8px; overflow: hidden; }
+.seg-btn { background: var(--surface); color: var(--ink); border: none; padding: 7px 16px; font-size: 12.5px; font-weight: 600; cursor: pointer; }
+.seg-btn + .seg-btn { border-left: 1px solid var(--field-line); }
+.seg-btn:hover { background: var(--surface-2); }
+.seg-btn.on-good { background: var(--good-solid); color: var(--on-solid); }
+.seg-btn.on-bad { background: var(--bad-solid); color: var(--on-solid); }
+.summary-chips { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 14px; }
+.chip { background: var(--surface-2); border: 1px solid var(--line); border-radius: 999px; padding: 4px 12px; font-size: 12px; font-weight: 600; color: var(--muted); }
+.chip-good { background: var(--good-soft); border-color: transparent; color: var(--good); }
+.chip-bad { background: var(--bad-soft); border-color: transparent; color: var(--bad); }
+.chip-date { margin-left: auto; font-size: 12px; color: var(--muted); }
+.empty-state { font-size: 13px; color: var(--muted); padding: 10px 0; }
+.empty-block { display: flex; flex-direction: column; align-items: flex-start; gap: 12px; }
+.banner { background: var(--bad-soft); color: var(--bad); border-radius: 10px; padding: 12px 16px; font-size: 13px; margin-bottom: 20px; font-weight: 500; }
+
+/* Login and gates */
+.login-screen { display: flex; align-items: center; justify-content: center; height: 100%; width: 100%; padding: 16px; background: radial-gradient(1100px 560px at 15% -10%, #1d3263 0%, transparent 60%), #0a1326; overflow-y: auto; }
+.login-card { background: var(--surface); padding: 36px 32px 28px; border-radius: 16px; width: 100%; max-width: 400px; box-shadow: 0 24px 48px -12px rgba(0, 0, 0, .5); text-align: center; border-top: 3px solid #e2b455; }
+.login-card .monogram { margin-bottom: 14px; width: 48px; height: 48px; font-size: 17px; }
+.login-card h2 { font-family: var(--font-display); font-size: 22px; font-weight: 800; color: var(--ink-strong); }
+.login-card .subtitle { font-size: 12.5px; color: var(--muted); margin: 4px 0 22px; }
+.login-card label { display: block; font-size: 11.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: var(--muted); margin-bottom: 8px; text-align: left; }
+.login-card select { margin-bottom: 18px; padding: 12px; }
+.login-card .signature { font-size: 11px; color: var(--muted); margin-top: 22px; }
+.gate-body { display: flex; flex-direction: column; gap: 16px; font-size: 13.5px; line-height: 1.6; color: var(--ink); }
+.gate-body .gate-note { color: var(--good); font-weight: 600; }
+.gate-body .gate-error { color: var(--bad); }
+
+/* Toast */
+.toast-region { position: fixed; left: 16px; right: 16px; bottom: calc(16px + env(safe-area-inset-bottom, 0px)); display: flex; justify-content: flex-end; pointer-events: none; z-index: 1100; }
+.toast { background: #0c1830; color: #fff; padding: 12px 18px; border-radius: 10px; font-size: 13px; box-shadow: 0 10px 24px rgba(0, 0, 0, .3); border-left: 4px solid #e2b455; max-width: 420px; }
+
+/* Modals: documents and profiles */
+.modal-backdrop { position: fixed; inset: 0; background: var(--scrim); display: flex; align-items: center; justify-content: center; padding: 16px; z-index: 1000; }
+.modal { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; width: 100%; max-width: 780px; max-height: 100%; display: flex; flex-direction: column; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, .5); }
+.modal-bar { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; padding: 12px 18px; border-bottom: 1px solid var(--line); }
+.modal-title { font-family: var(--font-display); font-size: 14px; font-weight: 700; color: var(--ink-strong); min-width: 0; }
+.doc-scroll { overflow: auto; padding: 18px; min-height: 0; }
+.profile-head { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.profile-id { flex: 1; min-width: 160px; }
+.profile-id h3 { font-family: var(--font-display); font-size: 20px; font-weight: 800; color: var(--ink-strong); }
+.profile-id p { font-size: 12.5px; color: var(--muted); }
+.profile-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-top: 18px; }
+.profile-stats div { background: var(--surface-2); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; display: flex; flex-direction: column; }
+.stat-label { font-size: 11.5px; color: var(--muted); font-weight: 600; }
+.profile-stats strong { font-family: var(--font-display); font-size: 20px; color: var(--ink-strong); margin-top: 2px; font-variant-numeric: tabular-nums; }
+.profile-actions { margin-top: 22px; }
+.profile-form { margin-top: 16px; }
+.confirm-box { margin-top: 16px; background: var(--bad-soft); border-radius: 10px; padding: 14px 16px; display: flex; flex-direction: column; gap: 12px; }
+.confirm-box p { color: var(--bad); font-size: 13px; font-weight: 500; }
+
+/* Printable documents (always paper-white) */
+.doc-sheet { background: var(--paper); color: var(--paper-ink); padding: clamp(20px, 5vw, 44px); border: 1px solid var(--paper-line); border-radius: 4px; font-family: Arial, Helvetica, sans-serif; }
+.doc-sheet * { font-family: inherit; }
+.doc-header { text-align: center; border-bottom: 3px double var(--paper-ink); padding-bottom: 16px; margin-bottom: 22px; }
+.doc-header h1 { font-family: Georgia, 'Times New Roman', serif; font-size: 22px; letter-spacing: .6px; }
+.doc-header .doc-sub { font-size: 13px; font-weight: 700; letter-spacing: 1.4px; text-transform: uppercase; color: var(--paper-ink); margin-top: 6px; }
+.doc-header .doc-period { font-size: 12px; color: var(--paper-muted); }
+.doc-meta { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); column-gap: 24px; }
+.doc-sheet p { margin: 4px 0; color: var(--paper-muted); font-size: 13px; }
+.doc-sheet p strong { color: var(--paper-ink); }
+.doc-table-wrap { overflow-x: auto; margin-top: 20px; }
+.doc-table { width: 100%; border-collapse: collapse; margin: 0; }
+.doc-table th, .doc-table td { border: 1px solid var(--paper-line); padding: 9px 10px; font-size: 13px; text-align: left; color: var(--paper-ink); background: transparent; letter-spacing: 0; text-transform: none; white-space: normal; }
+.doc-table th { background: var(--paper-head); font-weight: 700; }
+.doc-table tr.doc-total td { background: var(--paper-head); }
+.doc-table .doc-empty { text-align: center; color: var(--paper-muted); }
+.doc-position, .doc-remark { margin-top: 14px !important; }
+.doc-footer { margin-top: 52px; display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; flex-wrap: wrap; font-size: 12px; }
+.doc-sig { border-top: 1px solid var(--paper-ink); min-width: 190px; text-align: center; padding-top: 4px; color: var(--paper-ink); }
+.doc-signer { font-weight: 700; margin-bottom: 2px; }
+.doc-credit { text-align: right; display: flex; flex-direction: column; gap: 2px; color: var(--paper-muted); }
+.doc-credit strong { color: var(--paper-ink); }
+
+/* Phones: sidebar becomes a top bar */
+@media (max-width: 900px) {
+    .app-container { flex-direction: column; }
+    aside { width: 100%; flex-direction: column; justify-content: flex-start; }
+    .brand { padding: 12px 16px 8px; border-bottom: none; }
+    .nav-links { flex-direction: row; overflow-x: auto; padding: 0 12px 10px; gap: 4px; }
+    .nav-btn { width: auto; white-space: nowrap; padding: 8px 12px; }
+    .sidebar-footer { display: flex; align-items: center; gap: 12px; padding: 8px 16px; }
+    .sync-box { flex-direction: row; gap: 10px; padding: 0; flex: 1; align-items: center; flex-wrap: wrap; }
+    .sync-note { padding-left: 0; }
+    .logout-btn { width: auto; flex-shrink: 0; padding: 6px 12px; }
+    main { padding: 18px 16px 16px; }
+    header h2 { font-size: 20px; }
+    .card { padding: 18px; }
+    .dash-grid { grid-template-columns: minmax(0, 1fr); }
+    .doc-credit { text-align: left; }
+    .chip-date { margin-left: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; }
+}
+
+/* Printing (standalone build): only the open document prints */
+@media print {
+    html, body { height: auto; overflow: visible; background: #fff; }
+    body * { visibility: hidden; }
+    .doc-sheet, .doc-sheet * { visibility: visible; }
+    #root, .app-container, main { display: block; height: auto; overflow: visible; padding: 0; }
+    .modal-backdrop { position: static; display: block; background: none; padding: 0; }
+    .modal { max-width: none; max-height: none; border: none; box-shadow: none; display: block; background: none; }
+    .doc-scroll { overflow: visible; padding: 0; }
+    .doc-sheet { position: absolute; left: 0; top: 0; width: 100%; border: none; }
+}
+
+
+/* White Lion Professional Edition: polished navy, gold and white system-wide refinement */
+:root { --accent:#15345b; --accent-soft:#e8eef6; --gold:#b88a2b; --gold-soft:#fbf4e3; --line:#dfe5ed; }
+body { background: #f2f5f9; }
+button, input, select, textarea { font: inherit; }
+button { -webkit-tap-highlight-color: transparent; }
+button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, a:focus-visible { outline: 3px solid #d9ad4b !important; outline-offset: 2px; }
+.btn-primary { background: linear-gradient(135deg,#15345b,#0c2340) !important; border-color:#15345b !important; box-shadow:0 3px 10px rgba(14,39,70,.13); }
+.btn-primary:hover { background:linear-gradient(135deg,#1d4777,#102d50) !important; }
+.nav-btn.active { background:linear-gradient(90deg,rgba(226,180,85,.18),rgba(226,180,85,.06)) !important; box-shadow:inset 3px 0 #e2b455; }
+.brand .monogram, .monogram { border-color:rgba(226,180,85,.55); box-shadow:0 3px 12px rgba(0,0,0,.12); }
+.card, .kpi, .login-card { box-shadow:0 8px 24px rgba(20,35,58,.045); }
+.card { border-color:#e0e6ef; }
+input, select, textarea { max-width:100%; }
+.table-wrap { max-width:100%; }
+#wl-safety-launcher { position:fixed; z-index:10001; right:16px; bottom:16px; border:1px solid #e2b455; border-radius:999px; background:#102947; color:#fff; padding:12px 16px; font-weight:800; box-shadow:0 8px 28px #07162938; cursor:pointer; display:flex; align-items:center; gap:8px; font-size:13px; }
+#wl-safety-launcher:hover { background:#193c64; }
+#wl-safety-overlay { position:fixed; inset:0; z-index:10002; background:rgba(5,16,31,.62); display:none; align-items:center; justify-content:center; padding:14px; }
+#wl-safety-panel { width:min(580px,100%); max-height:90vh; overflow:auto; background:#fff; color:#172033; border-radius:18px; border:1px solid #dfe5ed; box-shadow:0 24px 80px #0004; padding:22px; font-family:system-ui,-apple-system,sans-serif; }
+#wl-safety-panel h2 { margin:0 0 5px; font-size:22px; color:#102947; }
+#wl-safety-panel p { line-height:1.5; font-size:13px; color:#526176; margin:8px 0 14px; }
+#wl-safety-panel .wl-row { display:flex; gap:10px; flex-wrap:wrap; margin:14px 0; }
+#wl-safety-panel button { border:1px solid #d7dee8; border-radius:10px; padding:11px 13px; cursor:pointer; font-weight:700; background:#f5f7fa; color:#172033; }
+#wl-safety-panel button.wl-primary { background:#102947; border-color:#102947; color:#fff; }
+#wl-safety-panel button.wl-close { float:right; padding:6px 10px; }
+#wl-safety-panel .wl-note { padding:11px 12px; border-radius:10px; background:#fbf4e3; border:1px solid #eed9a8; color:#674b12; }
+#wl-safety-panel .wl-status { padding:10px 12px; background:#eef3f8; border-radius:10px; color:#193451; }
+#wl-safety-panel input[type=file] { width:100%; margin-top:6px; font-size:13px; }
+@media(max-width:520px) { #wl-safety-launcher { right:10px; bottom:10px; padding:11px 13px; } #wl-safety-panel { padding:17px; } }
+@media print { #wl-safety-launcher, #wl-safety-overlay { display:none !important; } }
+
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
+<script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
+<script>
+"use strict";
+const { useState, useEffect, useCallback, useRef, useMemo } = React;
+/* =========================================================
+   1. CONFIGURATION
+   ========================================================= */
+const ENABLE_PRINT = true; // standalone build only: the hosted page cannot open the print dialog
+const ENABLE_LOCAL = true; // standalone build only: keeps records in this browser when no shared database exists
+const CONFIG = {
+    brand: 'White Lion Tech',
+    company: 'White Lion Tech Solutions',
+    version: 'School OS v4.0',
+    designer: 'Alhaji Abu Koroma',
+    admissionPrefix: 'WLT-2026-',
+    receiptPrefix: 'WLT-REC-',
+    currency: 'Le',
+};
+const ROLES = {
+    admin: { label: 'Administrator', tabs: ['dashboard', 'students', 'attendance', 'grades', 'fees', 'reports', 'staff', 'settings'] },
+    teacher: { label: 'Teacher', tabs: ['dashboard', 'attendance', 'grades', 'reports'] },
+    accountant: { label: 'Accountant', tabs: ['dashboard', 'fees', 'reports'] },
+};
+const ASSIGNABLE_ROLES = ['teacher', 'accountant'];
+const TABS = {
+    dashboard: { label: 'Dashboard', icon: 'dashboard' },
+    students: { label: 'Student Directory', icon: 'users' },
+    attendance: { label: 'Attendance', icon: 'calendar' },
+    grades: { label: 'Grades', icon: 'cap' },
+    fees: { label: 'Fees & Receipts', icon: 'wallet' },
+    reports: { label: 'Reports', icon: 'file' },
+    staff: { label: 'Staff & Access', icon: 'key' },
+    settings: { label: 'School Settings', icon: 'sliders' },
+};
+const GRADE_SCALE = [
+    { min: 80, label: 'A (Excellent)' },
+    { min: 70, label: 'B (Very Good)' },
+    { min: 60, label: 'C (Credit)' },
+    { min: 50, label: 'D (Pass)' },
+    { min: 0, label: 'F (Fail)' },
+];
+const FEE_CATEGORIES = ['Tuition Fee', 'Development Levy', 'Exam Fee'];
+const PAYMENT_METHODS = ['Cash', 'Mobile Money', 'Bank Transfer'];
+const TERMS = ['Term 1', 'Term 2', 'Term 3'];
+const DEFAULT_SETTINGS = {
+    schoolName: 'White Lion School',
+    academicYear: '2026/2027',
+    term: 'Term 1',
+    principal: '',
+    feeStructure: { 'Tuition Fee': 0, 'Development Levy': 0, 'Exam Fee': 0 },
+};
+/* Sample records from the original system; loaded only when an administrator asks. */
+const SEED = {
+    students: [
+        { id: 101, admissionNumber: 'WLT-2026-101', name: 'Aminata Sesay', class: 'Grade 10 Science', gender: 'Female', feesPaid: true },
+        { id: 102, admissionNumber: 'WLT-2026-102', name: 'Mohamed Kamara', class: 'Grade 10 Science', gender: 'Male', feesPaid: false },
+        { id: 103, admissionNumber: 'WLT-2026-103', name: 'Ibrahim Turay', class: 'Grade 11 Arts', gender: 'Male', feesPaid: true },
+    ],
+    grades: [
+        { id: 1, studentId: 101, subject: 'Mathematics', score: 88 },
+        { id: 2, studentId: 101, subject: 'English Language', score: 92 },
+    ],
+    fees: [
+        { id: 1, studentId: 101, receiptNo: 'WLT-REC-001', category: 'Tuition Fee', amount: 500000, method: 'Mobile Money', date: '2026-10-10' },
+    ],
+};
+/* =========================================================
+   2. UTILITIES
+   ========================================================= */
+const letterGrade = (score) => GRADE_SCALE.find((g) => score >= g.min).label;
+const formatMoney = (n) => `${CONFIG.currency} ${Number(n || 0).toLocaleString()}`;
+const isoDate = (d = new Date()) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+const sameId = (a, b) => String(a) === String(b);
+const admissionSuffix = (s) => parseInt(String(s.admissionNumber).split('-').pop(), 10);
+const initials = (name) => String(name || '?').trim().split(/\s+/).slice(0, 2).map((w) => w[0]).join('').toUpperCase();
+const prettyDate = (iso) => {
+    const d = new Date(iso + 'T00:00:00');
+    return Number.isNaN(d.getTime()) ? iso : d.toLocaleDateString(undefined, { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
+};
+const ordinal = (n) => {
+    const s = ['th', 'st', 'nd', 'rd'];
+    const v = n % 100;
+    return n + (s[(v - 20) % 10] || s[v] || s[0]);
+};
+function nextAdmissionNumber(students) {
+    const highest = students.reduce((max, s) => {
+        const n = admissionSuffix(s);
+        return Number.isFinite(n) ? Math.max(max, n) : max;
+    }, 100);
+    return CONFIG.admissionPrefix + (highest + 1);
+}
+function newReceiptNo(fees) {
+    const used = new Set(fees.map((f) => f.receiptNo));
+    let no;
+    do {
+        no = CONFIG.receiptPrefix + Math.floor(100000 + Math.random() * 900000);
+    } while (used.has(no));
+    return no;
+}
+function mergeSettings(raw) {
+    const r = raw || {};
+    return { ...DEFAULT_SETTINGS, ...r, feeStructure: { ...DEFAULT_SETTINGS.feeStructure, ...(r.feeStructure || {}) } };
+}
+const totalDue = (settings) => Object.values(settings.feeStructure).reduce((a, b) => a + (Number(b) || 0), 0);
+// Fee position for every student: what is owed, what was paid, what remains.
+function buildFeeSummaries(students, fees, settings) {
+    const due = totalDue(settings);
+    const paidBy = {};
+    fees.forEach((f) => { paidBy[f.studentId] = (paidBy[f.studentId] || 0) + Number(f.amount || 0); });
+    const out = {};
+    students.forEach((s) => {
+        const paid = paidBy[s.id] || 0;
+        let state;
+        if (due > 0)
+            state = paid >= due ? 'paid' : paid > 0 ? 'partial' : 'unpaid';
+        else
+            state = paid > 0 || s.feesPaid ? 'paid' : 'unpaid';
+        out[s.id] = { due, paid, balance: Math.max(due - paid, 0), state };
+    });
+    return out;
+}
+const FEE_LABEL = { paid: 'Paid', partial: 'Part paid', unpaid: 'Unpaid' };
+const FEE_TONE = { paid: 'success', partial: 'warn', unpaid: 'danger' };
+function averageOf(list) {
+    return list.length ? list.reduce((sum, g) => sum + Number(g.score || 0), 0) / list.length : null;
+}
+// Rank a student among classmates who have at least one grade.
+function classPosition(student, students, grades) {
+    const avgs = students
+        .filter((s) => s.class === student.class)
+        .map((s) => ({ id: s.id, avg: averageOf(grades.filter((g) => sameId(g.studentId, s.id))) }))
+        .filter((x) => x.avg !== null)
+        .sort((a, b) => b.avg - a.avg);
+    const idx = avgs.findIndex((x) => sameId(x.id, student.id));
+    return idx === -1 ? null : { position: idx + 1, of: avgs.length };
+}
+function remarkFor(avg) {
+    if (avg === null)
+        return '';
+    if (avg >= 80)
+        return 'Outstanding performance. Keep up the excellent work.';
+    if (avg >= 70)
+        return 'Very good results. Aim higher next term.';
+    if (avg >= 60)
+        return 'A good effort. More consistent study will lift these results.';
+    if (avg >= 50)
+        return 'A pass. Extra attention is needed in weaker subjects.';
+    return 'Results are below the pass mark. A meeting with parents is advised.';
+}
+function explainError(e) {
+    switch (e && e.code) {
+        case 'invalid_argument': return 'You do not have permission to do that.';
+        case 'quota_exceeded': return 'The shared database is full. Delete old records or contact the administrator.';
+        case 'resource_exhausted': return 'Too many requests at once. Wait a moment and try again.';
+        case 'unavailable': return 'The connection dropped. Try again.';
+        case 'revoked': return 'Your access to this page changed. Reload the page.';
+        default: return 'Something went wrong. Try again.';
+    }
+}
+const csvCell = (v) => {
+    const s = String(v === null || v === undefined ? '' : v);
+    return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+};
+// Offers a CSV file: through the page's save prompt when hosted, as a plain download in the standalone build.
+async function exportCsv(filename, rows) {
+    const text = '﻿' + rows.map((r) => r.map(csvCell).join(',')).join('\n');
+    const claude = window.claude;
+    try {
+        const dl = claude && claude.use ? await claude.use('downloads') : null;
+        if (dl) {
+            await dl.save({ filename, data: text });
+            return 'saved';
+        }
+    }
+    catch (e) {
+        if (e && e.code === 'declined')
+            return 'declined';
+        return 'unavailable';
+    }
+    if (!ENABLE_LOCAL)
+        return 'unavailable';
+    const url = URL.createObjectURL(new Blob([text], { type: 'text/csv' }));
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    return 'saved';
+}
+// Persistent state for the standalone build: reads once from localStorage, writes on every change.
+function useLocalStorage(key, fallback) {
+    const [value, setValue] = useState(() => {
+        try {
+            const raw = localStorage.getItem(key);
+            return raw ? JSON.parse(raw) : fallback;
+        }
+        catch (e) {
+            return fallback;
+        }
+    });
+    useEffect(() => {
+        try {
+            localStorage.setItem(key, JSON.stringify(value));
+        }
+        catch (e) {
+            // Never fail silently: the user must know if a record could not be saved.
+            try {
+                window.dispatchEvent(new CustomEvent('wl-storage-error', {
+                    detail: { key, message: 'A record could not be saved on this device. Export a backup immediately and free device storage before continuing.' }
+                }));
+            } catch (_) {}
+        }
+    }, [key, value]);
+    return [value, setValue];
+}
+function useOnlineStatus() {
+    const [online, setOnline] = useState(navigator.onLine);
+    useEffect(() => {
+        const on = () => setOnline(true);
+        const off = () => setOnline(false);
+        window.addEventListener('online', on);
+        window.addEventListener('offline', off);
+        return () => {
+            window.removeEventListener('online', on);
+            window.removeEventListener('offline', off);
+        };
+    }, []);
+    return online;
+}
+/* =========================================================
+   3. SHARED DATABASE LAYER (live, one record set for everyone)
+
+   students/{id}        one document per student
+   grades/{studentId}   entries: { entryId: {subject, score, ...} }
+   fees/{studentId}     entries: { entryId: {receiptNo, amount, ...} }
+   attendance/{date}    marks:   { studentId: 'Present' | 'Absent' }
+   staff/{userId}       role: 'teacher' | 'accountant'
+   requests/{userId}    a person asking for access
+   settings/main        school name, term, principal, fee structure
+   notices/{id}         notice board posts
+   ========================================================= */
+const recentAttendance = (c) => c.orderBy('date', 'desc').limit(14);
+function useLiveCollection(db, path, enabled, onError, build) {
+    const [state, setState] = useState({ items: [], loaded: false });
+    const errorRef = useRef(onError);
+    errorRef.current = onError;
+    useEffect(() => {
+        if (!db || !enabled) {
+            setState({ items: [], loaded: true });
+            return undefined;
+        }
+        setState({ items: [], loaded: false });
+        const ref = db.collection(path);
+        const query = build ? build(ref) : ref;
+        return query.onSnapshot((snap) => setState({ items: snap.docs.map((d) => ({ id: d.id, ...d.data() })), loaded: true }), (err) => { errorRef.current(err); setState((s) => ({ ...s, loaded: true })); });
+    }, [db, path, enabled]);
+    return state;
+}
+function useLiveDoc(db, path, enabled, onError) {
+    const [state, setState] = useState({ data: null, loaded: false });
+    const errorRef = useRef(onError);
+    errorRef.current = onError;
+    useEffect(() => {
+        if (!db || !enabled) {
+            setState({ data: null, loaded: true });
+            return undefined;
+        }
+        setState({ data: null, loaded: false });
+        return db.doc(path).onSnapshot((snap) => setState({ data: snap.exists ? snap.data() : null, loaded: true }), (err) => { errorRef.current(err); setState((s) => ({ ...s, loaded: true })); });
+    }, [db, path, enabled]);
+    return state;
+}
+function flattenEntries(docs) {
+    const out = [];
+    docs.forEach((d) => {
+        Object.entries(d.entries || {}).forEach(([entryId, entry]) => {
+            out.push({ id: entryId, studentId: d.id, ...entry });
+        });
+    });
+    return out.sort((a, b) => (a.at || 0) - (b.at || 0));
+}
+// Adds one entry to a student's grouped document, creating the document on first use.
+async function addGroupedEntry(db, collection, studentId, entry) {
+    const entryId = 'e' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+    const ref = db.doc(`${collection}/${studentId}`);
+    try {
+        await ref.update({ entries: { [entryId]: entry } });
+    }
+    catch (e) {
+        if (e && e.code === 'invalid_argument')
+            await ref.set({ entries: { [entryId]: entry } });
+        else
+            throw e;
+    }
+}
+function useSharedData(db, myId, isAdmin) {
+    const [error, setError] = useState('');
+    const [attDate, setAttDate] = useState(isoDate());
+    const onError = useCallback((e) => setError(explainError(e)), []);
+    const studentsQ = useLiveCollection(db, 'students', true, onError);
+    const gradesQ = useLiveCollection(db, 'grades', true, onError);
+    const feesQ = useLiveCollection(db, 'fees', true, onError);
+    const staffQ = useLiveCollection(db, 'staff', true, onError);
+    const noticesQ = useLiveCollection(db, 'notices', true, onError);
+    const historyQ = useLiveCollection(db, 'attendance', true, onError, recentAttendance);
+    const requestsQ = useLiveCollection(db, 'requests', isAdmin, onError);
+    const myRequestQ = useLiveDoc(db, `requests/${myId}`, Boolean(myId), onError);
+    const settingsQ = useLiveDoc(db, 'settings/main', true, onError);
+    const attendanceQ = useLiveDoc(db, `attendance/${attDate}`, true, onError);
+    const students = [...studentsQ.items].sort((a, b) => (admissionSuffix(a) || 0) - (admissionSuffix(b) || 0));
+    const grades = flattenEntries(gradesQ.items);
+    const fees = flattenEntries(feesQ.items);
+    const writeMarks = async (date, marks) => {
+        const ref = db.doc(`attendance/${date}`);
+        try {
+            await ref.update({ date, marks });
+        }
+        catch (e) {
+            if (e && e.code === 'invalid_argument')
+                await ref.set({ date, marks });
+            else
+                throw e;
+        }
+    };
+    const actions = {
+        async addStudent({ name, class: cls, gender }) {
+            const admissionNumber = nextAdmissionNumber(students);
+            await db.collection('students').doc().set({
+                admissionNumber, name, class: cls, gender, createdBy: myId, createdAt: Date.now(),
+            });
+            return admissionNumber;
+        },
+        async updateStudent(id, patch) {
+            await db.doc(`students/${id}`).update(patch);
+        },
+        async deleteStudent(id) {
+            await db.doc(`students/${id}`).delete();
+            await db.doc(`grades/${id}`).delete();
+            await db.doc(`fees/${id}`).delete();
+        },
+        async markAttendance(date, marks) {
+            await writeMarks(date, marks);
+        },
+        async addGrade({ studentId, subject, score }) {
+            await addGroupedEntry(db, 'grades', studentId, { subject, score, enteredBy: myId, at: Date.now() });
+        },
+        async addFee({ studentId, amount, category, method }) {
+            const receiptNo = newReceiptNo(fees);
+            await addGroupedEntry(db, 'fees', studentId, {
+                receiptNo, category, amount, method, date: isoDate(), recordedBy: myId, at: Date.now(),
+            });
+            return receiptNo;
+        },
+        async saveSettings(settings) {
+            await db.doc('settings/main').set({ ...settings, updatedBy: myId, at: Date.now() });
+        },
+        async addNotice(text) {
+            await db.collection('notices').doc().set({ text, by: myId, at: Date.now() });
+        },
+        async deleteNotice(id) {
+            await db.doc(`notices/${id}`).delete();
+        },
+        async loadSamples() {
+            for (const s of SEED.students) {
+                await db.doc(`students/sample-${s.id}`).set({
+                    admissionNumber: s.admissionNumber, name: s.name, class: s.class, gender: s.gender,
+                    createdBy: myId, createdAt: Date.now(),
+                });
+            }
+            const entriesFor = (list) => {
+                const byStudent = {};
+                list.forEach((item) => {
+                    const { id, studentId, ...rest } = item;
+                    byStudent[studentId] = byStudent[studentId] || {};
+                    byStudent[studentId]['sample' + id] = { ...rest, at: id };
+                });
+                return byStudent;
+            };
+            const g = entriesFor(SEED.grades);
+            for (const sid of Object.keys(g))
+                await db.doc(`grades/sample-${sid}`).set({ entries: g[sid] });
+            const f = entriesFor(SEED.fees);
+            for (const sid of Object.keys(f))
+                await db.doc(`fees/sample-${sid}`).set({ entries: f[sid] });
+        },
+        async requestAccess() {
+            await db.doc(`requests/${myId}`).set({ requestedAt: Date.now() });
+        },
+        async approveRequest(userId, role) {
+            await db.doc(`staff/${userId}`).set({ role, assignedBy: myId, at: Date.now() });
+            await db.doc(`requests/${userId}`).delete();
+        },
+        async declineRequest(userId) {
+            await db.doc(`requests/${userId}`).delete();
+        },
+        async setStaffRole(userId, role) {
+            await db.doc(`staff/${userId}`).set({ role, assignedBy: myId, at: Date.now() });
+        },
+        async removeStaff(userId) {
+            await db.doc(`staff/${userId}`).delete();
+        },
+    };
+    return {
+        loaded: studentsQ.loaded && staffQ.loaded && myRequestQ.loaded && settingsQ.loaded,
+        error,
+        students,
+        grades,
+        fees,
+        settings: mergeSettings(settingsQ.data),
+        notices: [...noticesQ.items].sort((a, b) => (b.at || 0) - (a.at || 0)),
+        history: historyQ.items.map((d) => ({ date: d.id, marks: d.marks || {} })),
+        attDate,
+        setAttDate,
+        attMarks: (attendanceQ.data && attendanceQ.data.marks) || {},
+        staff: staffQ.items,
+        requests: requestsQ.items,
+        hasRequest: Boolean(myRequestQ.data),
+        actions,
+    };
+}
+/* =========================================================
+   4. STANDALONE DATA LAYER (records kept in this browser)
+   ========================================================= */
+function useLocalData() {
+    const [students, setStudents] = useLocalStorage('wlt_students', SEED.students);
+    const [attendance, setAttendance] = useLocalStorage('wlt_attendance_v2', {});
+    const [grades, setGrades] = useLocalStorage('wlt_grades', SEED.grades);
+    const [fees, setFees] = useLocalStorage('wlt_fees', SEED.fees);
+    const [settings, setSettings] = useLocalStorage('wlt_settings', DEFAULT_SETTINGS);
+    const [notices, setNotices] = useLocalStorage('wlt_notices', []);
+    const [attDate, setAttDate] = useState(isoDate());
+    const history = Object.keys(attendance).sort().reverse().slice(0, 14).map((date) => ({ date, marks: attendance[date] }));
+    const actions = {
+        async addStudent({ name, class: cls, gender }) {
+            const admissionNumber = nextAdmissionNumber(students);
+            setStudents((l) => [...l, { id: Date.now(), admissionNumber, name, class: cls, gender, feesPaid: false }]);
+            return admissionNumber;
+        },
+        async updateStudent(id, patch) {
+            setStudents((l) => l.map((s) => (sameId(s.id, id) ? { ...s, ...patch } : s)));
+        },
+        async deleteStudent(id) {
+            setStudents((l) => l.filter((s) => !sameId(s.id, id)));
+            setGrades((l) => l.filter((g) => !sameId(g.studentId, id)));
+            setFees((l) => l.filter((f) => !sameId(f.studentId, id)));
+        },
+        async markAttendance(date, marks) {
+            setAttendance((m) => ({ ...m, [date]: { ...(m[date] || {}), ...marks } }));
+        },
+        async addGrade({ studentId, subject, score }) {
+            setGrades((l) => [...l, { id: Date.now(), studentId, subject, score, at: Date.now() }]);
+        },
+        async addFee({ studentId, amount, category, method }) {
+            const receiptNo = newReceiptNo(fees);
+            setFees((l) => [...l, { id: Date.now(), studentId, receiptNo, category, amount, method, date: isoDate(), at: Date.now() }]);
+            return receiptNo;
+        },
+        async saveSettings(next) { setSettings(next); },
+        async addNotice(text) { setNotices((l) => [{ id: String(Date.now()), text, at: Date.now() }, ...l]); },
+        async deleteNotice(id) { setNotices((l) => l.filter((n) => n.id !== id)); },
+    };
+    return {
+        loaded: true, error: '', students, grades, fees,
+        settings: mergeSettings(settings),
+        notices, history, attDate, setAttDate,
+        attMarks: attendance[attDate] || {},
+        staff: [], requests: [], hasRequest: false, actions,
+    };
+}
+/* =========================================================
+   5. ICONS & SMALL COMPONENTS
+   ========================================================= */
+const ICONS = {
+    dashboard: React.createElement(React.Fragment, null,
+        React.createElement("rect", { x: "3", y: "3", width: "7", height: "9", rx: "1.5" }),
+        React.createElement("rect", { x: "14", y: "3", width: "7", height: "5", rx: "1.5" }),
+        React.createElement("rect", { x: "14", y: "12", width: "7", height: "9", rx: "1.5" }),
+        React.createElement("rect", { x: "3", y: "16", width: "7", height: "5", rx: "1.5" })),
+    users: React.createElement(React.Fragment, null,
+        React.createElement("path", { d: "M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" }),
+        React.createElement("circle", { cx: "9", cy: "7", r: "4" }),
+        React.createElement("path", { d: "M22 21v-2a4 4 0 0 0-3-3.87" }),
+        React.createElement("path", { d: "M16 3.13a4 4 0 0 1 0 7.75" })),
+    calendar: React.createElement(React.Fragment, null,
+        React.createElement("rect", { x: "3", y: "4", width: "18", height: "18", rx: "2" }),
+        React.createElement("path", { d: "M16 2v4M8 2v4M3 10h18" }),
+        React.createElement("path", { d: "m9 16 2 2 4-4" })),
+    cap: React.createElement(React.Fragment, null,
+        React.createElement("path", { d: "M22 10 12 5 2 10l10 5 10-5z" }),
+        React.createElement("path", { d: "M6 12v5c3 2 9 2 12 0v-5" })),
+    wallet: React.createElement(React.Fragment, null,
+        React.createElement("path", { d: "M20 12V8H6a2 2 0 0 1 0-4h12v4" }),
+        React.createElement("path", { d: "M4 6v12a2 2 0 0 0 2 2h14v-4" }),
+        React.createElement("path", { d: "M18 12a2 2 0 0 0 0 4h4v-4z" })),
+    file: React.createElement(React.Fragment, null,
+        React.createElement("path", { d: "M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" }),
+        React.createElement("path", { d: "M14 2v6h6M16 13H8M16 17H8M10 9H8" })),
+    key: React.createElement(React.Fragment, null,
+        React.createElement("circle", { cx: "7.5", cy: "15.5", r: "5.5" }),
+        React.createElement("path", { d: "m21 2-9.6 9.6M15.5 7.5l3 3L22 7l-3-3" })),
+    sliders: React.createElement(React.Fragment, null,
+        React.createElement("path", { d: "M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6" })),
+    megaphone: React.createElement(React.Fragment, null,
+        React.createElement("path", { d: "m3 11 18-5v12L3 14v-3z" }),
+        React.createElement("path", { d: "M11.6 16.8a3 3 0 1 1-5.8-1.6" })),
+    search: React.createElement(React.Fragment, null,
+        React.createElement("circle", { cx: "11", cy: "11", r: "8" }),
+        React.createElement("path", { d: "m21 21-4.3-4.3" })),
+    download: React.createElement(React.Fragment, null,
+        React.createElement("path", { d: "M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" })),
+    trash: React.createElement(React.Fragment, null,
+        React.createElement("path", { d: "M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6" })),
+    pencil: React.createElement(React.Fragment, null,
+        React.createElement("path", { d: "M12 20h9" }),
+        React.createElement("path", { d: "M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z" })),
+    check: React.createElement(React.Fragment, null,
+        React.createElement("path", { d: "M20 6 9 17l-5-5" })),
+    percent: React.createElement(React.Fragment, null,
+        React.createElement("path", { d: "m19 5-14 14" }),
+        React.createElement("circle", { cx: "6.5", cy: "6.5", r: "2.5" }),
+        React.createElement("circle", { cx: "17.5", cy: "17.5", r: "2.5" })),
+    coins: React.createElement(React.Fragment, null,
+        React.createElement("circle", { cx: "8", cy: "8", r: "6" }),
+        React.createElement("path", { d: "M18.09 10.37A6 6 0 1 1 10.34 18" }),
+        React.createElement("path", { d: "M7 6h1v4" })),
+};
+function Icon({ name, size = 18 }) {
+    return (React.createElement("svg", { className: "icon", width: size, height: size, viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "1.8", strokeLinecap: "round", strokeLinejoin: "round", "aria-hidden": "true" }, ICONS[name]));
+}
+function Avatar({ name, size }) {
+    return React.createElement("span", { className: `avatar ${size === 'lg' ? 'avatar-lg' : ''}`, "aria-hidden": "true" }, initials(name));
+}
+function Brand({ small }) {
+    return (React.createElement("span", { className: `monogram ${small ? 'monogram-sm' : ''}`, "aria-hidden": "true" }, "WL"));
+}
+function Card({ title, description, action, children, flush }) {
+    return (React.createElement("section", { className: `card ${flush ? 'card-flush' : ''}` },
+        (title || action) && (React.createElement("div", { className: "card-head" },
+            React.createElement("div", null,
+                title && React.createElement("h3", { className: "card-title" }, title),
+                description && React.createElement("p", { className: "card-desc" }, description)),
+            action && React.createElement("div", { className: "card-action" }, action))),
+        children));
+}
+function Toast({ message }) {
+    return React.createElement("div", { className: "toast-region", "aria-live": "polite" }, message ? React.createElement("div", { className: "toast" }, message) : null);
+}
+function EmptyState({ children }) {
+    return React.createElement("p", { className: "empty-state" }, children);
+}
+function Badge({ tone, children }) {
+    return React.createElement("span", { className: `badge ${tone}` }, children);
+}
+function GateScreen({ title, children }) {
+    return (React.createElement("div", { className: "login-screen" },
+        React.createElement("div", { className: "login-card" },
+            React.createElement(Brand, null),
+            React.createElement("h2", null, title),
+            React.createElement("p", { className: "subtitle" }, CONFIG.company),
+            React.createElement("div", { className: "gate-body" }, children),
+            React.createElement("p", { className: "signature" },
+                "Designed by ",
+                CONFIG.designer))));
+}
+function useProfiles(user, ids) {
+    const [map, setMap] = useState({});
+    const key = ids.join('|');
+    useEffect(() => {
+        if (!user || ids.length === 0)
+            return undefined;
+        let alive = true;
+        user.profiles(ids).then((p) => { if (alive)
+            setMap(p); });
+        return () => { alive = false; };
+    }, [user, key]);
+    return map;
+}
+function useStudentFilter(students) {
+    const [query, setQuery] = useState('');
+    const [cls, setCls] = useState('');
+    const classes = useMemo(() => [...new Set(students.map((s) => s.class))].sort(), [students]);
+    const q = query.trim().toLowerCase();
+    const filtered = students.filter((s) => (!cls || s.class === cls) &&
+        (!q || s.name.toLowerCase().includes(q) || String(s.admissionNumber).toLowerCase().includes(q)));
+    return { query, setQuery, cls, setCls, classes, filtered };
+}
+function FilterBar({ filter, extra }) {
+    return (React.createElement("div", { className: "filter-bar" },
+        React.createElement("label", { className: "search-field" },
+            React.createElement(Icon, { name: "search", size: 16 }),
+            React.createElement("input", { type: "search", value: filter.query, onChange: (e) => filter.setQuery(e.target.value), placeholder: "Search name or admission no.", "aria-label": "Search students" })),
+        React.createElement("select", { value: filter.cls, onChange: (e) => filter.setCls(e.target.value), "aria-label": "Filter by class", className: "inline-select" },
+            React.createElement("option", { value: "" }, "All classes"),
+            filter.classes.map((c) => React.createElement("option", { key: c, value: c }, c))),
+        extra));
+}
+/* ---------- Charts (drawn from theme tokens) ---------- */
+function TrendChart({ points }) {
+    // points: [{label, value (0-100) | null}]
+    const W = 560, H = 190, left = 34, right = 8, top = 12, bottom = 26;
+    const plotW = W - left - right, plotH = H - top - bottom;
+    const slot = plotW / Math.max(points.length, 1);
+    const barW = Math.min(26, slot * 0.62);
+    const y = (v) => top + plotH - (v / 100) * plotH;
+    return (React.createElement("svg", { className: "chart", viewBox: `0 0 ${W} ${H}`, role: "img", "aria-label": "Attendance rate for recent school days" },
+        [0, 50, 100].map((t) => (React.createElement("g", { key: t },
+            React.createElement("line", { x1: left, x2: W - right, y1: y(t), y2: y(t), className: "chart-grid" }),
+            React.createElement("text", { x: left - 8, y: y(t) + 4, textAnchor: "end", className: "chart-text" },
+                t,
+                "%")))),
+        points.map((p, i) => {
+            const cx = left + slot * i + slot / 2;
+            return (React.createElement("g", { key: p.label + i },
+                p.value !== null && (React.createElement("rect", { x: cx - barW / 2, y: y(p.value), width: barW, height: Math.max(plotH - (y(p.value) - top), 2), rx: "3", className: i === points.length - 1 ? 'chart-bar chart-bar-now' : 'chart-bar' },
+                    React.createElement("title", null, `${p.label}: ${Math.round(p.value)}%`))),
+                React.createElement("text", { x: cx, y: H - 8, textAnchor: "middle", className: "chart-text" }, p.label)));
+        })));
+}
+function HBars({ rows, format }) {
+    // rows: [{label, value}]
+    const max = Math.max(...rows.map((r) => r.value), 1);
+    return (React.createElement("div", { className: "hbars" }, rows.map((r) => (React.createElement("div", { key: r.label, className: "hbar-row" },
+        React.createElement("div", { className: "hbar-label" }, r.label),
+        React.createElement("div", { className: "hbar-track" },
+            React.createElement("div", { className: "hbar-fill", style: { width: `${(r.value / max) * 100}%` } })),
+        React.createElement("div", { className: "hbar-value" }, format ? format(r.value) : r.value))))));
+}
+/* =========================================================
+   6. DOCUMENTS (report cards & receipts, shown in a viewer)
+   ========================================================= */
+function docTitle(doc) {
+    return doc.kind === 'report'
+        ? `Report Card - ${doc.student.name}`
+        : `Fee Receipt - ${doc.fee.receiptNo}`;
+}
+function docToText(doc) {
+    const { student, settings } = doc;
+    if (doc.kind === 'report') {
+        const avg = averageOf(doc.grades);
+        const lines = [
+            settings.schoolName.toUpperCase(),
+            `Academic Report Card - ${settings.term}, ${settings.academicYear}`,
+            '',
+            `Student: ${student.name}`,
+            `Admission No: ${student.admissionNumber}`,
+            `Class: ${student.class}`,
+            `Fee Status: ${doc.feeState === 'paid' ? 'Cleared' : 'Pending'}`,
+            '',
+        ];
+        if (doc.grades.length === 0)
+            lines.push('No recorded grades available.');
+        doc.grades.forEach((g) => lines.push(`${g.subject}: ${g.score}% - ${letterGrade(g.score)}`));
+        if (avg !== null)
+            lines.push('', `Average: ${Math.round(avg)}%`);
+        if (doc.position)
+            lines.push(`Position in class: ${ordinal(doc.position.position)} of ${doc.position.of}`);
+        return lines.join('\n');
+    }
+    const { fee, summary } = doc;
+    const lines = [
+        settings.schoolName.toUpperCase(),
+        'Official Fee Receipt',
+        '',
+        `Receipt No: ${fee.receiptNo}`,
+        `Date: ${fee.date}`,
+        `Student: ${student.name} (${student.admissionNumber})`,
+        `Class: ${student.class}`,
+        `Payment Method: ${fee.method}`,
+        `${fee.category}: ${formatMoney(fee.amount)}`,
+    ];
+    if (summary && summary.due > 0) {
+        lines.push('', `Total due: ${formatMoney(summary.due)}`, `Paid to date: ${formatMoney(summary.paid)}`, `Balance: ${formatMoney(summary.balance)}`);
+    }
+    return lines.join('\n');
+}
+function DocFooter({ signatureLabel, signer }) {
+    return (React.createElement("div", { className: "doc-footer" },
+        React.createElement("div", { className: "doc-sig" },
+            signer && React.createElement("div", { className: "doc-signer" }, signer),
+            React.createElement("div", null, signatureLabel)),
+        React.createElement("div", { className: "doc-credit" },
+            React.createElement("strong", null,
+                "Designed by ",
+                CONFIG.designer),
+            React.createElement("span", null, CONFIG.company))));
+}
+function ReportCardDoc({ doc }) {
+    const { student, grades, settings, position, feeState } = doc;
+    const avg = averageOf(grades);
+    return (React.createElement(React.Fragment, null,
+        React.createElement("div", { className: "doc-header" },
+            React.createElement("h1", null, settings.schoolName.toUpperCase()),
+            React.createElement("p", { className: "doc-sub" }, "Academic Report Card"),
+            React.createElement("p", { className: "doc-period" },
+                settings.term,
+                " \u2022 ",
+                settings.academicYear)),
+        React.createElement("div", { className: "doc-meta" },
+            React.createElement("p", null,
+                React.createElement("strong", null, "Student Name:"),
+                " ",
+                student.name),
+            React.createElement("p", null,
+                React.createElement("strong", null, "Admission Number:"),
+                " ",
+                student.admissionNumber),
+            React.createElement("p", null,
+                React.createElement("strong", null, "Class:"),
+                " ",
+                student.class),
+            React.createElement("p", null,
+                React.createElement("strong", null, "Fee Status:"),
+                " ",
+                feeState === 'paid' ? 'Cleared' : 'Pending')),
+        React.createElement("div", { className: "doc-table-wrap" },
+            React.createElement("table", { className: "doc-table" },
+                React.createElement("thead", null,
+                    React.createElement("tr", null,
+                        React.createElement("th", null, "Subject"),
+                        React.createElement("th", null, "Score"),
+                        React.createElement("th", null, "Letter Grade"))),
+                React.createElement("tbody", null,
+                    grades.length === 0 && (React.createElement("tr", null,
+                        React.createElement("td", { colSpan: "3", className: "doc-empty" }, "No recorded grades available."))),
+                    grades.map((g) => (React.createElement("tr", { key: g.id },
+                        React.createElement("td", null, g.subject),
+                        React.createElement("td", null,
+                            g.score,
+                            "%"),
+                        React.createElement("td", null,
+                            React.createElement("strong", null, letterGrade(g.score)))))),
+                    avg !== null && (React.createElement("tr", { className: "doc-total" },
+                        React.createElement("td", null,
+                            React.createElement("strong", null, "Average")),
+                        React.createElement("td", null,
+                            React.createElement("strong", null,
+                                Math.round(avg),
+                                "%")),
+                        React.createElement("td", null,
+                            React.createElement("strong", null, letterGrade(Math.round(avg))))))))),
+        position && React.createElement("p", { className: "doc-position" },
+            React.createElement("strong", null, "Position in class:"),
+            " ",
+            ordinal(position.position),
+            " of ",
+            position.of),
+        avg !== null && React.createElement("p", { className: "doc-remark" },
+            React.createElement("strong", null, "Remarks:"),
+            " ",
+            remarkFor(avg)),
+        React.createElement(DocFooter, { signatureLabel: "Principal's Signature", signer: settings.principal })));
+}
+function ReceiptDoc({ doc }) {
+    const { student, fee, settings, summary } = doc;
+    return (React.createElement(React.Fragment, null,
+        React.createElement("div", { className: "doc-header" },
+            React.createElement("h1", null, settings.schoolName.toUpperCase()),
+            React.createElement("p", { className: "doc-sub" }, "Official Fee Receipt"),
+            React.createElement("p", { className: "doc-period" },
+                settings.term,
+                " \u2022 ",
+                settings.academicYear)),
+        React.createElement("div", { className: "doc-meta" },
+            React.createElement("p", null,
+                React.createElement("strong", null, "Receipt Number:"),
+                " ",
+                fee.receiptNo),
+            React.createElement("p", null,
+                React.createElement("strong", null, "Date:"),
+                " ",
+                fee.date),
+            React.createElement("p", null,
+                React.createElement("strong", null, "Student Name:"),
+                " ",
+                student.name,
+                " (",
+                student.admissionNumber,
+                ")"),
+            React.createElement("p", null,
+                React.createElement("strong", null, "Class:"),
+                " ",
+                student.class),
+            React.createElement("p", null,
+                React.createElement("strong", null, "Payment Method:"),
+                " ",
+                fee.method)),
+        React.createElement("div", { className: "doc-table-wrap" },
+            React.createElement("table", { className: "doc-table" },
+                React.createElement("thead", null,
+                    React.createElement("tr", null,
+                        React.createElement("th", null, "Fee Category"),
+                        React.createElement("th", null, "Amount Paid"))),
+                React.createElement("tbody", null,
+                    React.createElement("tr", null,
+                        React.createElement("td", null, fee.category),
+                        React.createElement("td", null, formatMoney(fee.amount))),
+                    summary && summary.due > 0 && (React.createElement(React.Fragment, null,
+                        React.createElement("tr", null,
+                            React.createElement("td", null, "Total due this term"),
+                            React.createElement("td", null, formatMoney(summary.due))),
+                        React.createElement("tr", null,
+                            React.createElement("td", null, "Paid to date"),
+                            React.createElement("td", null, formatMoney(summary.paid))),
+                        React.createElement("tr", { className: "doc-total" },
+                            React.createElement("td", null,
+                                React.createElement("strong", null, "Balance")),
+                            React.createElement("td", null,
+                                React.createElement("strong", null, formatMoney(summary.balance))))))))),
+        React.createElement(DocFooter, { signatureLabel: "Accountant Signature" })));
+}
+function DocumentModal({ doc, onClose, onNotify }) {
+    useEffect(() => {
+        const onKey = (e) => { if (e.key === 'Escape')
+            onClose(); };
+        window.addEventListener('keydown', onKey);
+        return () => window.removeEventListener('keydown', onKey);
+    }, [onClose]);
+    const copy = async () => {
+        try {
+            await navigator.clipboard.writeText(docToText(doc));
+            onNotify('Details copied.');
+        }
+        catch (e) {
+            onNotify('Copying is not available in this view.');
+        }
+    };
+    return (React.createElement("div", { className: "modal-backdrop", onClick: onClose },
+        React.createElement("div", { className: "modal", role: "dialog", "aria-modal": "true", "aria-label": docTitle(doc), onClick: (e) => e.stopPropagation() },
+            React.createElement("div", { className: "modal-bar" },
+                React.createElement("span", { className: "modal-title" }, docTitle(doc)),
+                React.createElement("div", { className: "row-actions" },
+                    ENABLE_PRINT && React.createElement("button", { className: "btn btn-primary btn-sm", onClick: () => window.print() }, "Print"),
+                    React.createElement("button", { className: "btn btn-quiet btn-sm", onClick: copy }, "Copy details"),
+                    React.createElement("button", { className: "btn btn-quiet btn-sm", onClick: onClose }, "Close"))),
+            React.createElement("div", { className: "doc-scroll" },
+                React.createElement("div", { className: "doc-sheet" }, doc.kind === 'report' ? React.createElement(ReportCardDoc, { doc: doc }) : React.createElement(ReceiptDoc, { doc: doc }))))));
+}
+/* ---------- Student profile ---------- */
+function ProfileModal({ student, summary, grades, fees, history, canEdit, onClose, onUpdate, onDelete, onOpenDoc, buildReport }) {
+    const [editing, setEditing] = useState(false);
+    const [confirming, setConfirming] = useState(false);
+    useEffect(() => {
+        const onKey = (e) => { if (e.key === 'Escape')
+            onClose(); };
+        window.addEventListener('keydown', onKey);
+        return () => window.removeEventListener('keydown', onKey);
+    }, [onClose]);
+    const avg = averageOf(grades);
+    const daysMarked = history.filter((h) => h.marks[student.id]).length;
+    const daysPresent = history.filter((h) => h.marks[student.id] === 'Present').length;
+    const myFees = fees.filter((f) => sameId(f.studentId, student.id));
+    const save = async (e) => {
+        e.preventDefault();
+        const f = e.target;
+        const ok = await onUpdate(student.id, { name: f.pname.value.trim(), class: f.pclass.value.trim(), gender: f.pgender.value });
+        if (ok)
+            setEditing(false);
+    };
+    return (React.createElement("div", { className: "modal-backdrop", onClick: onClose },
+        React.createElement("div", { className: "modal", role: "dialog", "aria-modal": "true", "aria-label": `Profile of ${student.name}`, onClick: (e) => e.stopPropagation() },
+            React.createElement("div", { className: "modal-bar" },
+                React.createElement("span", { className: "modal-title" }, "Student profile"),
+                React.createElement("div", { className: "row-actions" },
+                    React.createElement("button", { className: "btn btn-quiet btn-sm", onClick: onClose }, "Close"))),
+            React.createElement("div", { className: "doc-scroll profile" },
+                React.createElement("div", { className: "profile-head" },
+                    React.createElement(Avatar, { name: student.name, size: "lg" }),
+                    React.createElement("div", { className: "profile-id" },
+                        React.createElement("h3", null, student.name),
+                        React.createElement("p", null,
+                            student.class,
+                            " \u2022 ",
+                            React.createElement("span", { className: "mono" }, student.admissionNumber),
+                            " \u2022 ",
+                            student.gender)),
+                    React.createElement(Badge, { tone: FEE_TONE[summary.state] }, FEE_LABEL[summary.state])),
+                React.createElement("div", { className: "profile-stats" },
+                    React.createElement("div", null,
+                        React.createElement("span", { className: "stat-label" }, "Average score"),
+                        React.createElement("strong", null, avg === null ? '—' : `${Math.round(avg)}%`)),
+                    React.createElement("div", null,
+                        React.createElement("span", { className: "stat-label" }, "Attendance (14 days)"),
+                        React.createElement("strong", null, daysMarked ? `${Math.round((daysPresent / daysMarked) * 100)}%` : '—')),
+                    React.createElement("div", null,
+                        React.createElement("span", { className: "stat-label" }, "Fee balance"),
+                        React.createElement("strong", null, summary.due > 0 ? formatMoney(summary.balance) : '—'))),
+                React.createElement("h4", { className: "section-label" }, "Grades"),
+                grades.length === 0 ? React.createElement(EmptyState, null, "No grades recorded yet.") : (React.createElement("div", { className: "table-wrap" },
+                    React.createElement("table", null,
+                        React.createElement("thead", null,
+                            React.createElement("tr", null,
+                                React.createElement("th", null, "Subject"),
+                                React.createElement("th", null, "Score"),
+                                React.createElement("th", null, "Grade"))),
+                        React.createElement("tbody", null, grades.map((g) => React.createElement("tr", { key: g.id },
+                            React.createElement("td", null, g.subject),
+                            React.createElement("td", { className: "num" },
+                                g.score,
+                                "%"),
+                            React.createElement("td", null, letterGrade(g.score)))))))),
+                React.createElement("h4", { className: "section-label" }, "Payments"),
+                myFees.length === 0 ? React.createElement(EmptyState, null, "No payments recorded yet.") : (React.createElement("div", { className: "table-wrap" },
+                    React.createElement("table", null,
+                        React.createElement("thead", null,
+                            React.createElement("tr", null,
+                                React.createElement("th", null, "Receipt"),
+                                React.createElement("th", null, "Category"),
+                                React.createElement("th", null, "Date"),
+                                React.createElement("th", { className: "num" }, "Amount"))),
+                        React.createElement("tbody", null, myFees.map((f) => React.createElement("tr", { key: f.id },
+                            React.createElement("td", { className: "mono" }, f.receiptNo),
+                            React.createElement("td", null, f.category),
+                            React.createElement("td", null, f.date),
+                            React.createElement("td", { className: "num" }, formatMoney(f.amount)))))))),
+                React.createElement("div", { className: "row-actions profile-actions" },
+                    React.createElement("button", { className: "btn btn-dark btn-sm", onClick: () => onOpenDoc(buildReport(student)) }, "Open report card"),
+                    canEdit && !editing && React.createElement("button", { className: "btn btn-quiet btn-sm", onClick: () => setEditing(true) },
+                        React.createElement(Icon, { name: "pencil", size: 14 }),
+                        " Edit details"),
+                    canEdit && !confirming && React.createElement("button", { className: "btn btn-danger-quiet btn-sm", onClick: () => setConfirming(true) },
+                        React.createElement(Icon, { name: "trash", size: 14 }),
+                        " Delete student")),
+                editing && (React.createElement("form", { onSubmit: save, className: "form-grid profile-form" },
+                    React.createElement("input", { id: "pname", name: "pname", defaultValue: student.name, required: true, "aria-label": "Full name" }),
+                    React.createElement("input", { id: "pclass", name: "pclass", defaultValue: student.class, required: true, "aria-label": "Class" }),
+                    React.createElement("select", { id: "pgender", name: "pgender", defaultValue: student.gender, "aria-label": "Gender" },
+                        React.createElement("option", { value: "Male" }, "Male"),
+                        React.createElement("option", { value: "Female" }, "Female")),
+                    React.createElement("div", { className: "row-actions" },
+                        React.createElement("button", { type: "submit", className: "btn btn-primary btn-sm" }, "Save changes"),
+                        React.createElement("button", { type: "button", className: "btn btn-quiet btn-sm", onClick: () => setEditing(false) }, "Cancel")))),
+                confirming && (React.createElement("div", { className: "confirm-box" },
+                    React.createElement("p", null,
+                        "Delete ",
+                        student.name,
+                        ", with their grades and payments? This cannot be undone."),
+                    React.createElement("div", { className: "row-actions" },
+                        React.createElement("button", { className: "btn btn-danger btn-sm", onClick: async () => { const ok = await onDelete(student.id); if (ok)
+                                onClose(); } }, "Yes, delete"),
+                        React.createElement("button", { className: "btn btn-quiet btn-sm", onClick: () => setConfirming(false) }, "Keep student"))))))));
+}
+/* =========================================================
+   7. PAGES
+   ========================================================= */
+function LoginScreen({ onLogin }) {
+    const [role, setRole] = useState('admin');
+    return (React.createElement("div", { className: "login-screen" },
+        React.createElement("div", { className: "login-card" },
+            React.createElement(Brand, null),
+            React.createElement("h2", null, "School Portal"),
+            React.createElement("p", { className: "subtitle" }, CONFIG.company),
+            React.createElement("label", { htmlFor: "loginRole" }, "Select local workspace role"),
+            React.createElement("select", { id: "loginRole", value: role, onChange: (e) => setRole(e.target.value) }, Object.keys(ROLES).map((key) => (React.createElement("option", { key: key, value: key }, ROLES[key].label)))),
+            React.createElement("button", { className: "btn btn-primary btn-block", onClick: () => onLogin(role) }, "Open workspace"),
+            React.createElement("p", { className: "signature" },
+                "Designed by ",
+                CONFIG.designer))));
+}
+function Sidebar({ tabs, activeTab, onNavigate, isOnline, mode, settings, onLogout }) {
+    return (React.createElement("aside", null,
+        React.createElement("div", { className: "aside-top" },
+            React.createElement("div", { className: "brand" },
+                React.createElement(Brand, null),
+                React.createElement("div", { className: "brand-text" },
+                    React.createElement("h1", null, settings.schoolName),
+                    React.createElement("p", null, CONFIG.version))),
+            React.createElement("nav", { className: "nav-links", "aria-label": "Main" }, tabs.map((tab) => (React.createElement("button", { key: tab, className: `nav-btn ${activeTab === tab ? 'active' : ''}`, onClick: () => onNavigate(tab), "aria-current": activeTab === tab ? 'page' : undefined },
+                React.createElement(Icon, { name: TABS[tab].icon }),
+                React.createElement("span", null, TABS[tab].label)))))),
+        React.createElement("div", { className: "sidebar-footer" },
+            React.createElement("div", { className: "sync-box" },
+                React.createElement("span", { className: "sync-state" },
+                    React.createElement("span", { className: `status-dot ${isOnline ? 'online' : 'offline'}` }),
+                    isOnline ? (mode === 'shared' ? 'Live records' : 'Online') : 'Offline'),
+                React.createElement("span", { className: "sync-note" }, mode === 'shared' ? 'Shared with staff' : 'This device only')),
+            onLogout && React.createElement("button", { className: "logout-btn", onClick: onLogout }, "Sign out"))));
+}
+function KPI({ icon, label, value, sub, tone }) {
+    return (React.createElement("div", { className: "kpi" },
+        React.createElement("span", { className: `kpi-icon ${tone || ''}` },
+            React.createElement(Icon, { name: icon, size: 20 })),
+        React.createElement("div", { className: "kpi-body" },
+            React.createElement("span", { className: "kpi-label" }, label),
+            React.createElement("strong", { className: "kpi-value" }, value),
+            sub && React.createElement("span", { className: "kpi-sub" }, sub))));
+}
+function NoticeBoard({ notices, canPost, onPost, onDelete }) {
+    const handle = async (e) => {
+        e.preventDefault();
+        const f = e.target;
+        const text = f.ntext.value.trim();
+        if (!text)
+            return;
+        const ok = await onPost(text);
+        if (ok)
+            f.reset();
+    };
+    return (React.createElement(Card, { title: "Notice board", description: "Announcements everyone with access can see." },
+        canPost && (React.createElement("form", { onSubmit: handle, className: "notice-form" },
+            React.createElement("input", { id: "ntext", name: "ntext", type: "text", maxLength: "240", placeholder: "Write an announcement", "aria-label": "Announcement" }),
+            React.createElement("button", { type: "submit", className: "btn btn-primary btn-sm" }, "Post"))),
+        notices.length === 0 && React.createElement(EmptyState, null, "No announcements yet."),
+        React.createElement("ul", { className: "notice-list" }, notices.slice(0, 5).map((n) => (React.createElement("li", { key: n.id },
+            React.createElement(Icon, { name: "megaphone", size: 16 }),
+            React.createElement("div", null,
+                React.createElement("p", null, n.text),
+                React.createElement("span", null, n.at ? new Date(n.at).toLocaleDateString() : '')),
+            canPost && React.createElement("button", { className: "icon-btn", "aria-label": "Delete announcement", onClick: () => onDelete(n.id) },
+                React.createElement(Icon, { name: "trash", size: 15 }))))))));
+}
+function DashboardPage({ role, students, fees, grades, fx, settings, history, notices, canPost, onPost, onDeleteNotice }) {
+    const todayKey = isoDate();
+    const todayMarks = (history.find((h) => h.date === todayKey) || { marks: {} }).marks;
+    const present = students.filter((s) => todayMarks[s.id] === 'Present').length;
+    const marked = students.filter((s) => todayMarks[s.id]).length;
+    const showFees = role === 'admin' || role === 'accountant';
+    const collected = fees.reduce((a, f) => a + Number(f.amount || 0), 0);
+    const due = totalDue(settings);
+    const expected = due * students.length;
+    const outstanding = Object.values(fx).reduce((a, s) => a + s.balance, 0);
+    const cleared = Object.values(fx).filter((s) => s.state === 'paid').length;
+    const trend = [...history].reverse().map((h) => {
+        const vals = Object.values(h.marks);
+        const p = vals.filter((v) => v === 'Present').length;
+        return { label: h.date.slice(8), value: vals.length ? (p / vals.length) * 100 : null };
+    });
+    const byCategory = FEE_CATEGORIES.map((c) => ({
+        label: c,
+        value: fees.filter((f) => f.category === c).reduce((a, f) => a + Number(f.amount || 0), 0),
+    }));
+    const byClass = Object.entries(students.reduce((m, s) => ({ ...m, [s.class]: (m[s.class] || 0) + 1 }), {}))
+        .map(([label, value]) => ({ label, value })).sort((a, b) => b.value - a.value).slice(0, 6);
+    return (React.createElement("div", { className: "dash" },
+        React.createElement("div", { className: "kpi-grid" },
+            React.createElement(KPI, { icon: "users", label: "Enrolled students", value: students.length, sub: `${new Set(students.map((s) => s.class)).size} classes` }),
+            React.createElement(KPI, { icon: "calendar", tone: "tone-good", label: "Present today", value: marked ? `${Math.round((present / marked) * 100)}%` : '—', sub: marked ? `${present} of ${marked} marked` : 'Not marked yet' }),
+            showFees ? (React.createElement(React.Fragment, null,
+                React.createElement(KPI, { icon: "coins", tone: "tone-gold", label: "Fees collected", value: formatMoney(collected), sub: expected > 0 ? `${Math.round((collected / expected) * 100)}% of ${formatMoney(expected)}` : `${fees.length} payments` }),
+                React.createElement(KPI, { icon: "wallet", tone: "tone-warn", label: due > 0 ? 'Outstanding' : 'Fees cleared', value: due > 0 ? formatMoney(outstanding) : `${cleared} / ${students.length}`, sub: due > 0 ? `${cleared} students fully paid` : 'Set a fee structure in Settings' }))) : (React.createElement(React.Fragment, null,
+                React.createElement(KPI, { icon: "cap", tone: "tone-gold", label: "Grades recorded", value: grades.length, sub: "Across all subjects" }),
+                React.createElement(KPI, { icon: "percent", tone: "tone-warn", label: "Average score", value: grades.length ? `${Math.round(averageOf(grades))}%` : '—', sub: "All recorded grades" })))),
+        React.createElement("div", { className: "dash-grid" },
+            React.createElement(Card, { title: "Attendance trend", description: "Share of marked students present, last 14 school days." }, trend.length === 0 ? React.createElement(EmptyState, null, "No attendance marked yet. Mark today's register to start the trend.") : React.createElement(TrendChart, { points: trend })),
+            React.createElement(NoticeBoard, { notices: notices, canPost: canPost, onPost: onPost, onDelete: onDeleteNotice })),
+        React.createElement("div", { className: "dash-grid dash-grid-even" },
+            showFees && (React.createElement(Card, { title: "Fees collected by category" }, fees.length === 0 ? React.createElement(EmptyState, null, "No payments recorded yet.") : React.createElement(HBars, { rows: byCategory, format: formatMoney }))),
+            React.createElement(Card, { title: "Students by class" }, byClass.length === 0 ? React.createElement(EmptyState, null, "No students enrolled yet.") : React.createElement(HBars, { rows: byClass })))));
+}
+function StudentsPage({ students, fx, onAddStudent, onLoadSamples, onOpenProfile, onExport }) {
+    const filter = useStudentFilter(students);
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        const f = e.target;
+        const ok = await onAddStudent({ name: f.sname.value.trim(), class: f.sclass.value.trim(), gender: f.sgender.value });
+        if (ok)
+            f.reset();
+    };
+    return (React.createElement("div", null,
+        React.createElement(Card, { title: "Register a student", description: "Admission numbers are issued automatically." },
+            React.createElement("form", { onSubmit: handleSubmit, className: "form-grid" },
+                React.createElement("input", { id: "sname", type: "text", name: "sname", placeholder: "Full name", required: true, "aria-label": "Full name" }),
+                React.createElement("input", { id: "sclass", type: "text", name: "sclass", placeholder: "Class (e.g. Grade 10 Science)", required: true, "aria-label": "Class", list: "class-options" }),
+                React.createElement("datalist", { id: "class-options" }, filter.classes.map((c) => React.createElement("option", { key: c, value: c }))),
+                React.createElement("select", { id: "sgender", name: "sgender", "aria-label": "Gender" },
+                    React.createElement("option", { value: "Male" }, "Male"),
+                    React.createElement("option", { value: "Female" }, "Female")),
+                React.createElement("button", { type: "submit", className: "btn btn-primary" }, "Register student"))),
+        React.createElement(Card, { title: "Student directory", description: `${students.length} enrolled. Select a student to open their profile.`, action: students.length > 0 && React.createElement("button", { className: "btn btn-quiet btn-sm", onClick: onExport },
+                React.createElement(Icon, { name: "download", size: 14 }),
+                " Export CSV") }, students.length === 0 ? (React.createElement("div", { className: "empty-block" },
+            React.createElement(EmptyState, null, "No students yet. Register the first student above."),
+            onLoadSamples && React.createElement("button", { className: "btn btn-quiet btn-sm", onClick: onLoadSamples }, "Load the 3 sample students"))) : (React.createElement(React.Fragment, null,
+            React.createElement(FilterBar, { filter: filter }),
+            React.createElement("div", { className: "table-wrap" },
+                React.createElement("table", { className: "clickable" },
+                    React.createElement("thead", null,
+                        React.createElement("tr", null,
+                            React.createElement("th", null, "Student"),
+                            React.createElement("th", null, "Admission no."),
+                            React.createElement("th", null, "Class"),
+                            React.createElement("th", null, "Gender"),
+                            React.createElement("th", null, "Fees"))),
+                    React.createElement("tbody", null, filter.filtered.map((s) => (React.createElement("tr", { key: s.id, tabIndex: "0", onClick: () => onOpenProfile(s), onKeyDown: (e) => { if (e.key === 'Enter')
+                            onOpenProfile(s); } },
+                        React.createElement("td", null,
+                            React.createElement("div", { className: "person" },
+                                React.createElement(Avatar, { name: s.name }),
+                                React.createElement("span", { className: "strong" }, s.name))),
+                        React.createElement("td", { className: "mono" }, s.admissionNumber),
+                        React.createElement("td", null, s.class),
+                        React.createElement("td", null, s.gender),
+                        React.createElement("td", null,
+                            React.createElement(Badge, { tone: FEE_TONE[fx[s.id].state] }, FEE_LABEL[fx[s.id].state]))))))),
+                filter.filtered.length === 0 && React.createElement(EmptyState, null, "No students match your search.")))))));
+}
+function AttendancePage({ students, attDate, setAttDate, attMarks, onMarkMany }) {
+    const filter = useStudentFilter(students);
+    const todayKey = isoDate();
+    const list = filter.filtered;
+    const present = students.filter((s) => attMarks[s.id] === 'Present').length;
+    const absent = students.filter((s) => attMarks[s.id] === 'Absent').length;
+    const unmarked = students.length - present - absent;
+    const bulk = (status) => {
+        const marks = {};
+        list.forEach((s) => { marks[s.id] = status; });
+        onMarkMany(marks, `${list.length} student(s) marked ${status.toLowerCase()}.`);
+    };
+    return (React.createElement(Card, { title: "Daily register", description: "Everyone sees marks as they are saved.", action: React.createElement("label", { className: "date-field" },
+            React.createElement("span", null, "Date"),
+            React.createElement("input", { id: "attDate", type: "date", value: attDate, max: todayKey, onChange: (e) => e.target.value && setAttDate(e.target.value) })) }, students.length === 0 ? React.createElement(EmptyState, null, "No students yet. An administrator can register them in the Student Directory.") : (React.createElement(React.Fragment, null,
+        React.createElement("div", { className: "summary-chips" },
+            React.createElement("span", { className: "chip chip-good" },
+                present,
+                " present"),
+            React.createElement("span", { className: "chip chip-bad" },
+                absent,
+                " absent"),
+            React.createElement("span", { className: "chip" },
+                unmarked,
+                " not marked"),
+            React.createElement("span", { className: "chip-date" }, prettyDate(attDate))),
+        React.createElement(FilterBar, { filter: filter, extra: React.createElement("div", { className: "row-actions" },
+                React.createElement("button", { className: "btn btn-quiet btn-sm", onClick: () => bulk('Present'), disabled: list.length === 0 }, "Mark all present"),
+                React.createElement("button", { className: "btn btn-quiet btn-sm", onClick: () => bulk('Absent'), disabled: list.length === 0 }, "Mark all absent")) }),
+        list.map((s) => {
+            const status = attMarks[s.id];
+            return (React.createElement("div", { key: s.id, className: "list-item" },
+                React.createElement("div", { className: "person" },
+                    React.createElement(Avatar, { name: s.name }),
+                    React.createElement("div", null,
+                        React.createElement("div", { className: "title" }, s.name),
+                        React.createElement("div", { className: "meta" },
+                            s.class,
+                            " \u2022 ",
+                            s.admissionNumber))),
+                React.createElement("div", { className: "seg", role: "group", "aria-label": `Attendance for ${s.name}` },
+                    React.createElement("button", { className: `seg-btn ${status === 'Present' ? 'on-good' : ''}`, onClick: () => onMarkMany({ [s.id]: 'Present' }, `${s.name} marked present.`) }, "Present"),
+                    React.createElement("button", { className: `seg-btn ${status === 'Absent' ? 'on-bad' : ''}`, onClick: () => onMarkMany({ [s.id]: 'Absent' }, `${s.name} marked absent.`) }, "Absent"))));
+        }),
+        list.length === 0 && React.createElement(EmptyState, null, "No students match your search.")))));
+}
+function GradesPage({ students, grades, onAddGrade }) {
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        const f = e.target;
+        const student = students.find((s) => sameId(s.id, f.gstudent.value));
+        if (!student)
+            return;
+        const ok = await onAddGrade({ studentId: student.id, subject: f.gsubject.value.trim(), score: Number(f.gscore.value) });
+        if (ok)
+            f.reset();
+    };
+    const nameOf = (id) => (students.find((s) => sameId(s.id, id)) || {}).name || 'Unknown';
+    const recent = [...grades].reverse().slice(0, 8);
+    return (React.createElement("div", null,
+        React.createElement(Card, { title: "Enter a grade", description: "Scores are out of 100 and graded A to F automatically." }, students.length === 0 ? (React.createElement(EmptyState, null, "No students yet. An administrator can register them in the Student Directory.")) : (React.createElement("form", { onSubmit: handleSubmit, className: "form-grid" },
+            React.createElement("select", { id: "gstudent", name: "gstudent", "aria-label": "Student" }, students.map((s) => React.createElement("option", { key: s.id, value: s.id },
+                s.name,
+                " (",
+                s.admissionNumber,
+                ")"))),
+            React.createElement("input", { id: "gsubject", type: "text", name: "gsubject", placeholder: "Subject", required: true, "aria-label": "Subject" }),
+            React.createElement("input", { id: "gscore", type: "number", name: "gscore", placeholder: "Score (%)", min: "0", max: "100", required: true, "aria-label": "Score" }),
+            React.createElement("button", { type: "submit", className: "btn btn-primary" }, "Save grade")))),
+        React.createElement(Card, { title: "Recently entered" }, recent.length === 0 ? React.createElement(EmptyState, null, "No grades entered yet.") : (React.createElement("div", { className: "table-wrap" },
+            React.createElement("table", null,
+                React.createElement("thead", null,
+                    React.createElement("tr", null,
+                        React.createElement("th", null, "Student"),
+                        React.createElement("th", null, "Subject"),
+                        React.createElement("th", { className: "num" }, "Score"),
+                        React.createElement("th", null, "Grade"))),
+                React.createElement("tbody", null, recent.map((g) => (React.createElement("tr", { key: g.id },
+                    React.createElement("td", { className: "strong" }, nameOf(g.studentId)),
+                    React.createElement("td", null, g.subject),
+                    React.createElement("td", { className: "num" },
+                        g.score,
+                        "%"),
+                    React.createElement("td", null, letterGrade(g.score))))))))))));
+}
+function FeesPage({ students, fees, fx, settings, onPayFee, onOpenReceipt, onExport }) {
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        const f = e.target;
+        const student = students.find((s) => sameId(s.id, f.fstudent.value));
+        if (!student)
+            return;
+        const ok = await onPayFee({
+            studentId: student.id,
+            amount: Number(f.famount.value),
+            category: f.fcat.value,
+            method: f.fmethod.value,
+        });
+        if (ok)
+            f.reset();
+    };
+    const byId = (id) => students.find((s) => sameId(s.id, id));
+    const recent = [...fees].reverse().slice(0, 8);
+    const due = totalDue(settings);
+    const owing = students.filter((s) => fx[s.id].balance > 0 && due > 0)
+        .sort((a, b) => fx[b.id].balance - fx[a.id].balance).slice(0, 6);
+    return (React.createElement("div", null,
+        React.createElement(Card, { title: "Record a payment", description: "A receipt number is issued automatically." }, students.length === 0 ? (React.createElement(EmptyState, null, "No students yet. An administrator can register them in the Student Directory.")) : (React.createElement("form", { onSubmit: handleSubmit, className: "form-grid" },
+            React.createElement("select", { id: "fstudent", name: "fstudent", "aria-label": "Student" }, students.map((s) => React.createElement("option", { key: s.id, value: s.id },
+                s.name,
+                " (",
+                s.class,
+                ")"))),
+            React.createElement("input", { id: "famount", type: "number", name: "famount", placeholder: `Amount (${CONFIG.currency})`, min: "1", required: true, "aria-label": "Amount" }),
+            React.createElement("select", { id: "fcat", name: "fcat", "aria-label": "Fee category" }, FEE_CATEGORIES.map((c) => React.createElement("option", { key: c, value: c }, c))),
+            React.createElement("select", { id: "fmethod", name: "fmethod", "aria-label": "Payment method" }, PAYMENT_METHODS.map((m) => React.createElement("option", { key: m, value: m }, m))),
+            React.createElement("button", { type: "submit", className: "btn btn-primary span-all" }, "Process payment and save record")))),
+        owing.length > 0 && (React.createElement(Card, { title: "Largest outstanding balances", description: `Total due per student this term: ${formatMoney(due)}.` },
+            React.createElement("div", { className: "table-wrap" },
+                React.createElement("table", null,
+                    React.createElement("thead", null,
+                        React.createElement("tr", null,
+                            React.createElement("th", null, "Student"),
+                            React.createElement("th", null, "Class"),
+                            React.createElement("th", { className: "num" }, "Paid"),
+                            React.createElement("th", { className: "num" }, "Balance"))),
+                    React.createElement("tbody", null, owing.map((s) => (React.createElement("tr", { key: s.id },
+                        React.createElement("td", null,
+                            React.createElement("div", { className: "person" },
+                                React.createElement(Avatar, { name: s.name }),
+                                React.createElement("span", { className: "strong" }, s.name))),
+                        React.createElement("td", null, s.class),
+                        React.createElement("td", { className: "num" }, formatMoney(fx[s.id].paid)),
+                        React.createElement("td", { className: "num text-bad" }, formatMoney(fx[s.id].balance)))))))))),
+        React.createElement(Card, { title: "Recent payments", action: fees.length > 0 && React.createElement("button", { className: "btn btn-quiet btn-sm", onClick: onExport },
+                React.createElement(Icon, { name: "download", size: 14 }),
+                " Export CSV") }, recent.length === 0 ? React.createElement(EmptyState, null, "No payments recorded yet.") : (React.createElement("div", { className: "table-wrap" },
+            React.createElement("table", null,
+                React.createElement("thead", null,
+                    React.createElement("tr", null,
+                        React.createElement("th", null, "Receipt"),
+                        React.createElement("th", null, "Student"),
+                        React.createElement("th", null, "Category"),
+                        React.createElement("th", null, "Date"),
+                        React.createElement("th", { className: "num" }, "Amount"),
+                        React.createElement("th", null))),
+                React.createElement("tbody", null, recent.map((f) => {
+                    const s = byId(f.studentId);
+                    return (React.createElement("tr", { key: f.id },
+                        React.createElement("td", { className: "mono" }, f.receiptNo),
+                        React.createElement("td", { className: "strong" }, s ? s.name : 'Unknown'),
+                        React.createElement("td", null, f.category),
+                        React.createElement("td", null, f.date),
+                        React.createElement("td", { className: "num" }, formatMoney(f.amount)),
+                        React.createElement("td", null, s && React.createElement("button", { className: "btn btn-quiet btn-sm", onClick: () => onOpenReceipt(s, f) }, "Receipt"))));
+                }))))))));
+}
+function ReportsPage({ students, grades, fees, fx, onOpenReport, onOpenReceipt }) {
+    const filter = useStudentFilter(students);
+    return (React.createElement(Card, { title: "Report cards & receipts", description: "Open a student's report card or their latest receipt." }, students.length === 0 ? React.createElement(EmptyState, null, "No students yet.") : (React.createElement(React.Fragment, null,
+        React.createElement(FilterBar, { filter: filter }),
+        filter.filtered.map((s) => {
+            const studentFees = fees.filter((f) => sameId(f.studentId, s.id));
+            const latestFee = studentFees[studentFees.length - 1];
+            const avg = averageOf(grades.filter((g) => sameId(g.studentId, s.id)));
+            return (React.createElement("div", { key: s.id, className: "list-item" },
+                React.createElement("div", { className: "person" },
+                    React.createElement(Avatar, { name: s.name }),
+                    React.createElement("div", null,
+                        React.createElement("div", { className: "title" },
+                            s.name,
+                            " ",
+                            React.createElement("span", { className: "muted-inline" }, s.admissionNumber)),
+                        React.createElement("div", { className: "meta" },
+                            s.class,
+                            " \u2022 Average ",
+                            avg === null ? '—' : `${Math.round(avg)}%`,
+                            " \u2022",
+                            ' ',
+                            React.createElement(Badge, { tone: FEE_TONE[fx[s.id].state] }, FEE_LABEL[fx[s.id].state])))),
+                React.createElement("div", { className: "row-actions" },
+                    React.createElement("button", { className: "btn btn-dark btn-sm", onClick: () => onOpenReport(s) }, "Report card"),
+                    latestFee && React.createElement("button", { className: "btn btn-quiet btn-sm", onClick: () => onOpenReceipt(s, latestFee) }, "Receipt"))));
+        }),
+        filter.filtered.length === 0 && React.createElement(EmptyState, null, "No students match your search.")))));
+}
+function SettingsPage({ settings, onSave }) {
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        const f = e.target;
+        const feeStructure = {};
+        FEE_CATEGORIES.forEach((c, i) => { feeStructure[c] = Math.max(Number(f['fee' + i].value) || 0, 0); });
+        await onSave({
+            schoolName: f.schoolName.value.trim() || DEFAULT_SETTINGS.schoolName,
+            academicYear: f.academicYear.value.trim() || DEFAULT_SETTINGS.academicYear,
+            term: f.term.value,
+            principal: f.principal.value.trim(),
+            feeStructure,
+        });
+    };
+    return (React.createElement("form", { onSubmit: handleSubmit, key: JSON.stringify(settings) },
+        React.createElement(Card, { title: "School details", description: "Shown on the sidebar, report cards and receipts." },
+            React.createElement("div", { className: "field-grid" },
+                React.createElement("label", { className: "field" },
+                    React.createElement("span", null, "School name"),
+                    React.createElement("input", { id: "schoolName", name: "schoolName", defaultValue: settings.schoolName, required: true })),
+                React.createElement("label", { className: "field" },
+                    React.createElement("span", null, "Principal's name"),
+                    React.createElement("input", { id: "principal", name: "principal", defaultValue: settings.principal, placeholder: "Printed above the signature line" })),
+                React.createElement("label", { className: "field" },
+                    React.createElement("span", null, "Academic year"),
+                    React.createElement("input", { id: "academicYear", name: "academicYear", defaultValue: settings.academicYear })),
+                React.createElement("label", { className: "field" },
+                    React.createElement("span", null, "Current term"),
+                    React.createElement("select", { id: "term", name: "term", defaultValue: settings.term }, TERMS.map((t) => React.createElement("option", { key: t, value: t }, t)))))),
+        React.createElement(Card, { title: "Fee structure", description: `Amount each student owes per term, in ${CONFIG.currency}. Leave at 0 to treat any payment as fully paid.` },
+            React.createElement("div", { className: "field-grid" }, FEE_CATEGORIES.map((c, i) => (React.createElement("label", { className: "field", key: c },
+                React.createElement("span", null, c),
+                React.createElement("input", { id: 'fee' + i, name: 'fee' + i, type: "number", min: "0", defaultValue: settings.feeStructure[c] }))))),
+            React.createElement("p", { className: "card-desc total-line" },
+                "Total due per student: ",
+                React.createElement("strong", null, formatMoney(totalDue(settings))))),
+        React.createElement("button", { type: "submit", className: "btn btn-primary" }, "Save settings")));
+}
+function RequestRow({ request, name, onApprove, onDecline }) {
+    const [role, setRole] = useState('teacher');
+    return (React.createElement("div", { className: "list-item" },
+        React.createElement("div", { className: "person" },
+            React.createElement(Avatar, { name: name }),
+            React.createElement("div", null,
+                React.createElement("div", { className: "title" }, name),
+                React.createElement("div", { className: "meta" }, "Asked for access"))),
+        React.createElement("div", { className: "row-actions" },
+            React.createElement("select", { "aria-label": `Role for ${name}`, value: role, onChange: (e) => setRole(e.target.value), className: "inline-select" }, ASSIGNABLE_ROLES.map((r) => React.createElement("option", { key: r, value: r }, ROLES[r].label))),
+            React.createElement("button", { className: "btn btn-success btn-sm", onClick: () => onApprove(request.id, role) }, "Approve"),
+            React.createElement("button", { className: "btn btn-quiet btn-sm", onClick: () => onDecline(request.id) }, "Decline"))));
+}
+function StaffPage({ user, staff, requests, myId, onApprove, onDecline, onSetRole, onRemove }) {
+    const ids = [...requests.map((r) => r.id), ...staff.map((s) => s.id)];
+    const profiles = useProfiles(user, ids);
+    const nameOf = (id) => (id === myId ? 'You' : (profiles[id] && profiles[id].name) || 'Someone');
+    return (React.createElement("div", null,
+        React.createElement(Card, { title: "Access requests", description: "People who opened this page and asked for a role." },
+            requests.length === 0 && React.createElement(EmptyState, null, "No pending requests."),
+            requests.map((r) => (React.createElement(RequestRow, { key: r.id, request: r, name: nameOf(r.id), onApprove: onApprove, onDecline: onDecline })))),
+        React.createElement(Card, { title: "Staff roles", description: "Teachers and accountants who can use the system." },
+            staff.length === 0 && React.createElement(EmptyState, null, "No staff roles assigned yet."),
+            staff.map((s) => (React.createElement("div", { key: s.id, className: "list-item" },
+                React.createElement("div", { className: "person" },
+                    React.createElement(Avatar, { name: nameOf(s.id) }),
+                    React.createElement("div", null,
+                        React.createElement("div", { className: "title" }, nameOf(s.id)),
+                        React.createElement("div", { className: "meta" }, ROLES[s.role] ? ROLES[s.role].label : s.role))),
+                React.createElement("div", { className: "row-actions" },
+                    React.createElement("select", { "aria-label": `Role for ${nameOf(s.id)}`, value: s.role, onChange: (e) => onSetRole(s.id, e.target.value), className: "inline-select" }, ASSIGNABLE_ROLES.map((r) => React.createElement("option", { key: r, value: r }, ROLES[r].label))),
+                    React.createElement("button", { className: "btn btn-danger-quiet btn-sm", onClick: () => onRemove(s.id) }, "Remove")))))),
+        React.createElement("div", { className: "notice-box" },
+            React.createElement("h4", null, "How to add someone"),
+            React.createElement("p", null, "Open the Share menu on this page and invite them as a Contributor, then ask them to open the page and tap Request access. Their request appears above. To make someone an administrator, invite them as an Editor instead. Contributors can read all school records, so only share with people you trust."))));
+}
+/* =========================================================
+   8. WORKSPACE (layout, navigation, action feedback)
+   ========================================================= */
+function Workspace({ session, data, user, onLogout }) {
+    const { mode, role, name, userId } = session;
+    const tabs = ROLES[role].tabs.filter((t) => t !== 'staff' || mode === 'shared');
+    const [activeTab, setActiveTab] = useState('dashboard');
+    const [toast, setToast] = useState('');
+    const [storageWarning, setStorageWarning] = useState('');
+    useEffect(() => {
+        const onStorageError = (event) => setStorageWarning(
+            event && event.detail && event.detail.message
+                ? event.detail.message
+                : 'A record could not be saved on this device. Export a backup immediately.'
+        );
+        window.addEventListener('wl-storage-error', onStorageError);
+        return () => window.removeEventListener('wl-storage-error', onStorageError);
+    }, []);
+    const [doc, setDoc] = useState(null);
+    const [profileId, setProfileId] = useState(null);
+    const toastTimer = useRef(null);
+    const isOnline = useOnlineStatus();
+    const { students, grades, fees, settings, history, actions } = data;
+    const fx = useMemo(() => buildFeeSummaries(students, fees, settings), [students, fees, settings]);
+    const isAdmin = role === 'admin';
+    const notify = useCallback((message) => {
+        setToast(message);
+        clearTimeout(toastTimer.current);
+        toastTimer.current = setTimeout(() => setToast(''), 4000);
+    }, []);
+    // Runs a data action, reports the outcome, and tells the caller whether it worked.
+    const act = async (fn, okMessage) => {
+        try {
+            const result = await fn();
+            if (okMessage)
+                notify(typeof okMessage === 'function' ? okMessage(result) : okMessage);
+            return true;
+        }
+        catch (e) {
+            notify(explainError(e));
+            return false;
+        }
+    };
+    const buildReport = (s) => {
+        const studentGrades = grades.filter((g) => sameId(g.studentId, s.id));
+        return {
+            kind: 'report', student: s, grades: studentGrades, settings,
+            position: classPosition(s, students, grades), feeState: fx[s.id].state,
+        };
+    };
+    const buildReceipt = (s, fee) => ({ kind: 'receipt', student: s, fee, settings, summary: fx[s.id] });
+    const doExport = async (filename, rows) => {
+        const result = await exportCsv(filename, rows);
+        if (result === 'saved')
+            notify('Export ready.');
+        else if (result === 'unavailable')
+            notify('Exporting is not available in this view.');
+    };
+    const exportStudents = () => doExport('students.csv', [
+        ['Admission no.', 'Name', 'Class', 'Gender', 'Fee status', 'Paid', 'Balance'],
+        ...students.map((s) => [s.admissionNumber, s.name, s.class, s.gender, FEE_LABEL[fx[s.id].state], fx[s.id].paid, fx[s.id].balance]),
+    ]);
+    const exportFees = () => doExport('fee-payments.csv', [
+        ['Receipt', 'Student', 'Admission no.', 'Category', 'Method', 'Date', 'Amount'],
+        ...fees.map((f) => {
+            const s = students.find((x) => sameId(x.id, f.studentId)) || {};
+            return [f.receiptNo, s.name || '', s.admissionNumber || '', f.category, f.method, f.date, f.amount];
+        }),
+    ]);
+    const profileStudent = profileId === null ? null : students.find((s) => sameId(s.id, profileId));
+    const pageTitle = TABS[activeTab].label;
+    return (React.createElement("div", { className: "app-container" },
+        React.createElement(Sidebar, { tabs: tabs, activeTab: activeTab, onNavigate: setActiveTab, isOnline: isOnline, mode: mode, settings: settings, onLogout: onLogout }),
+        React.createElement("main", null,
+            React.createElement("div", { className: "main-inner" },
+                React.createElement("header", null,
+                    React.createElement("div", null,
+                        React.createElement("h2", null, pageTitle),
+                        React.createElement("p", null,
+                            settings.schoolName,
+                            " \u2022 ",
+                            settings.term,
+                            ", ",
+                            settings.academicYear)),
+                    React.createElement("div", { className: "user-chip" },
+                        React.createElement(Avatar, { name: name }),
+                        React.createElement("div", null,
+                            React.createElement("strong", null, mode === 'shared' ? name : ROLES[role].label),
+                            React.createElement("span", null, ROLES[role].label)))),
+                data.error && React.createElement("div", { className: "banner", role: "alert" }, data.error),
+                storageWarning && React.createElement("div", { className: "banner", role: "alert" }, storageWarning),
+                activeTab === 'dashboard' && (React.createElement(DashboardPage, { role: role, students: students, fees: fees, grades: grades, fx: fx, settings: settings, history: history, notices: data.notices, canPost: isAdmin, onPost: (text) => act(() => actions.addNotice(text), 'Announcement posted.'), onDeleteNotice: (id) => act(() => actions.deleteNotice(id), 'Announcement removed.') })),
+                activeTab === 'students' && (React.createElement(StudentsPage, { students: students, fx: fx, onAddStudent: (s) => act(() => actions.addStudent(s), (adm) => `${s.name} registered as ${adm}.`), onLoadSamples: mode === 'shared' ? () => act(actions.loadSamples, 'Sample students loaded.') : null, onOpenProfile: (s) => setProfileId(s.id), onExport: exportStudents })),
+                activeTab === 'attendance' && (React.createElement(AttendancePage, { students: students, attDate: data.attDate, setAttDate: data.setAttDate, attMarks: data.attMarks, onMarkMany: (marks, msg) => act(() => actions.markAttendance(data.attDate, marks), msg) })),
+                activeTab === 'grades' && (React.createElement(GradesPage, { students: students, grades: grades, onAddGrade: (g) => act(() => actions.addGrade(g), 'Grade recorded.') })),
+                activeTab === 'fees' && (React.createElement(FeesPage, { students: students, fees: fees, fx: fx, settings: settings, onPayFee: (p) => act(() => actions.addFee(p), (no) => `Payment logged. Receipt: ${no}`), onOpenReceipt: (s, f) => setDoc(buildReceipt(s, f)), onExport: exportFees })),
+                activeTab === 'reports' && (React.createElement(ReportsPage, { students: students, grades: grades, fees: fees, fx: fx, onOpenReport: (s) => setDoc(buildReport(s)), onOpenReceipt: (s, f) => setDoc(buildReceipt(s, f)) })),
+                activeTab === 'settings' && (React.createElement(SettingsPage, { settings: settings, onSave: (s) => act(() => actions.saveSettings(s), 'Settings saved.') })),
+                activeTab === 'staff' && (React.createElement(StaffPage, { user: user, staff: data.staff, requests: data.requests, myId: userId, onApprove: (id, r) => act(() => actions.approveRequest(id, r), 'Access approved.'), onDecline: (id) => act(() => actions.declineRequest(id), 'Request declined.'), onSetRole: (id, r) => act(() => actions.setStaffRole(id, r), 'Role updated.'), onRemove: (id) => act(() => actions.removeStaff(id), 'Staff access removed.') }))),
+            React.createElement("footer", { className: "main-footer" },
+                CONFIG.company,
+                " \u2022 Designed by ",
+                CONFIG.designer)),
+        profileStudent && (React.createElement(ProfileModal, { student: profileStudent, summary: fx[profileStudent.id], grades: grades.filter((g) => sameId(g.studentId, profileStudent.id)), fees: fees, history: history, canEdit: isAdmin, onClose: () => setProfileId(null), onUpdate: (id, patch) => act(() => actions.updateStudent(id, patch), 'Student updated.'), onDelete: (id) => act(() => actions.deleteStudent(id), 'Student deleted.'), onOpenDoc: (d) => { setProfileId(null); setDoc(d); }, buildReport: buildReport })),
+        doc && React.createElement(DocumentModal, { doc: doc, onClose: () => setDoc(null), onNotify: notify }),
+        React.createElement(Toast, { message: toast })));
+}
+/* =========================================================
+   9. APP MODES
+   ========================================================= */
+function LocalApp() {
+    const [auth, setAuth] = useState({ isAuthenticated: false, role: 'admin' });
+    const data = useLocalData();
+    if (!auth.isAuthenticated)
+        return React.createElement(LoginScreen, { onLogin: (role) => setAuth({ isAuthenticated: true, role }) });
+    return (React.createElement(Workspace, { key: auth.role, session: { mode: 'local', role: auth.role, name: ROLES[auth.role].label, userId: null }, data: data, user: null, onLogout: () => setAuth({ isAuthenticated: false, role: 'admin' }) }));
+}
+function SharedApp({ db, user, me, isAdmin, canWrite }) {
+    const data = useSharedData(db, me.id, isAdmin);
+    const [busy, setBusy] = useState(false);
+    const [requestError, setRequestError] = useState('');
+    if (!me.id) {
+        return (React.createElement(GateScreen, { title: "Sign-in needed" },
+            React.createElement("p", null, "This page could not tell who you are. Sign in to claude.ai and open the page again.")));
+    }
+    if (canWrite === false) {
+        return (React.createElement(GateScreen, { title: "View-only access" },
+            React.createElement("p", null, "You can open this page but not use it. Ask the school administrator to share it with you as a Contributor.")));
+    }
+    if (!data.loaded) {
+        return React.createElement(GateScreen, { title: "Connecting" },
+            React.createElement("p", null, "Loading school records."));
+    }
+    const staffEntry = data.staff.find((s) => s.id === me.id);
+    const role = isAdmin ? 'admin' : (staffEntry && ROLES[staffEntry.role] ? staffEntry.role : null);
+    if (!role) {
+        const request = async () => {
+            setBusy(true);
+            setRequestError('');
+            try {
+                await data.actions.requestAccess();
+            }
+            catch (e) {
+                setRequestError(explainError(e));
+            }
+            setBusy(false);
+        };
+        return (React.createElement(GateScreen, { title: "Access needed" },
+            React.createElement("p", null,
+                "Hello ",
+                me.name || 'there',
+                ". An administrator has to give you a role before you can use the system."),
+            data.hasRequest ? (React.createElement("p", { className: "gate-note" }, "Your request is sent. Check back after the administrator approves it.")) : (React.createElement("button", { className: "btn btn-primary btn-block", onClick: request, disabled: busy }, "Request access")),
+            requestError && React.createElement("p", { className: "gate-error" }, requestError)));
+    }
+    return (React.createElement(Workspace, { key: role, session: { mode: 'shared', role, name: me.name || 'You', userId: me.id }, data: data, user: user, onLogout: null }));
+}
+function Root() {
+    const [boot, setBoot] = useState({ status: 'loading' });
+    useEffect(() => {
+        let alive = true;
+        (async () => {
+            const claude = window.claude;
+            if (claude && claude.use) {
+                try {
+                    const [db, user] = await Promise.all([claude.use('db'), claude.use('user')]);
+                    if (db && user) {
+                        const me = await user.me();
+                        const isAdmin = await user.canEdit();
+                        const canWrite = await user.can('data.write');
+                        if (alive)
+                            setBoot({ status: 'shared', db, user, me, isAdmin, canWrite });
+                        return;
+                    }
+                }
+                catch (e) { /* fall through */ }
+            }
+            if (alive)
+                setBoot({ status: ENABLE_LOCAL ? 'local' : 'unavailable' });
+        })();
+        return () => { alive = false; };
+    }, []);
+    if (boot.status === 'loading')
+        return React.createElement(GateScreen, { title: "Connecting" },
+            React.createElement("p", null, "Loading school records."));
+    if (boot.status === 'unavailable') {
+        return (React.createElement(GateScreen, { title: "Sign-in needed" },
+            React.createElement("p", null, "The shared records are only available when you open this page while signed in to claude.ai.")));
+    }
+    if (boot.status === 'local')
+        return React.createElement(LocalApp, null);
+    return React.createElement(SharedApp, { db: boot.db, user: boot.user, me: boot.me, isAdmin: boot.isAdmin, canWrite: boot.canWrite });
+}
+ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(Root, null));
+
+</script>
+
+
+<script>
+/* White Lion Professional Edition — safe local-data backup and restore utility.
+   This tool never clears local records unless the user explicitly imports a valid backup. */
+(function () {
+  'use strict';
+  var APP_KEYS = {
+    wlt_students: 'array',
+    wlt_attendance_v2: 'object',
+    wlt_grades: 'array',
+    wlt_fees: 'array',
+    wlt_settings: 'object',
+    wlt_notices: 'array'
+  };
+  function appData() {
+    var records = {};
+    Object.keys(APP_KEYS).forEach(function (key) {
+      try { var raw = localStorage.getItem(key); if (raw !== null) records[key] = JSON.parse(raw); } catch (e) {}
+    });
+    return records;
+  }
+  function makeBackup() {
+    return { format: 'white-lion-school-backup', schemaVersion: 1, product: 'White Lion School Management System', edition: 'Professional Edition', createdAt: new Date().toISOString(), appData: appData() };
+  }
+  function downloadJson(obj, name) {
+    var blob = new Blob([JSON.stringify(obj, null, 2)], { type: 'application/json;charset=utf-8' });
+    var url = URL.createObjectURL(blob); var a = document.createElement('a');
+    a.href = url; a.download = name; a.style.display = 'none'; document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function () { URL.revokeObjectURL(url); }, 1500);
+  }
+  function validateBackup(data) {
+    if (!data || data.format !== 'white-lion-school-backup' || data.schemaVersion !== 1 || !data.appData || typeof data.appData !== 'object' || Array.isArray(data.appData)) throw new Error('This is not a recognised White Lion backup file.');
+    var keys = Object.keys(data.appData);
+    if (!keys.length) throw new Error('The backup contains no school records.');
+    keys.forEach(function (key) {
+      if (!Object.prototype.hasOwnProperty.call(APP_KEYS, key)) throw new Error('Unsupported data field in backup: ' + key);
+      var val = data.appData[key]; var type = APP_KEYS[key];
+      if (type === 'array' && !Array.isArray(val)) throw new Error('The backup has an invalid ' + key + ' field.');
+      if (type === 'object' && (!val || typeof val !== 'object' || Array.isArray(val))) throw new Error('The backup has an invalid ' + key + ' field.');
+    });
+    return keys;
+  }
+  function add(tag, attrs, text) { var el = document.createElement(tag); Object.keys(attrs || {}).forEach(function (k) { if (k === 'className') el.className = attrs[k]; else el.setAttribute(k, attrs[k]); }); if (text !== undefined) el.textContent = text; return el; }
+  function launch() {
+    if (document.getElementById('wl-safety-launcher')) return;
+    var button = add('button', { id:'wl-safety-launcher', type:'button', 'aria-haspopup':'dialog', 'aria-controls':'wl-safety-overlay' }, '♜  Data Safety & Backup');
+    var overlay = add('div', { id:'wl-safety-overlay' });
+    var panel = add('section', { id:'wl-safety-panel', role:'dialog', 'aria-modal':'true', 'aria-labelledby':'wl-safety-title' });
+    var close = add('button', { type:'button', className:'wl-close', 'aria-label':'Close backup panel' }, 'Close');
+    close.addEventListener('click', function(){ overlay.style.display='none'; button.focus(); });
+    var title = add('h2', { id:'wl-safety-title' }, 'Data Safety Centre');
+    var intro = add('p', {}, 'Create a portable backup of this browser’s White Lion records, or safely restore a previous backup. Keep backup files somewhere separate from this phone.');
+    var status = add('div', { className:'wl-status', role:'status', 'aria-live':'polite' }, 'Checking local records…');
+    var row = add('div', { className:'wl-row' });
+    var exportBtn = add('button', { type:'button', className:'wl-primary' }, 'Download backup (.json)');
+    var importBtn = add('button', { type:'button' }, 'Choose backup to restore');
+    var file = add('input', { type:'file', accept:'.json,application/json', 'aria-label':'Select a White Lion JSON backup' }); file.style.display='none';
+    var note = add('div', { className:'wl-note' }, 'Important: the standalone HTML stores local records in this browser only. It does not automatically synchronise with other devices. Multi-device synchronisation requires a configured shared database and secure user accounts.');
+    var note2 = add('p', {}, 'For safety, restore validates the backup and downloads a separate copy of the current records before replacing any imported fields. Do not clear browser data unless you have a verified backup.');
+    row.appendChild(exportBtn); row.appendChild(importBtn); panel.appendChild(close); panel.appendChild(title); panel.appendChild(intro); panel.appendChild(status); panel.appendChild(row); panel.appendChild(file); panel.appendChild(note); panel.appendChild(note2); overlay.appendChild(panel); document.body.appendChild(button); document.body.appendChild(overlay);
+    function refreshStatus() { var d=appData(); var n=Object.keys(d).length; var count=Array.isArray(d.wlt_students)?d.wlt_students.length:0; status.textContent='Local data fields found: '+n+' • Student records: '+count+' • Storage: this device/browser'; }
+    button.addEventListener('click', function(){ refreshStatus(); overlay.style.display='flex'; close.focus(); });
+    overlay.addEventListener('click', function(e){ if(e.target===overlay){ overlay.style.display='none'; button.focus(); } });
+    document.addEventListener('keydown', function(e){ if(e.key==='Escape' && overlay.style.display==='flex'){ overlay.style.display='none'; button.focus(); } });
+    exportBtn.addEventListener('click', function(){ try { var b=makeBackup(); var date=b.createdAt.slice(0,10); downloadJson(b,'White-Lion-School-Backup-'+date+'.json'); status.textContent='Backup prepared. Check your Downloads folder and keep a second copy somewhere safe.'; } catch(e) { status.textContent='Backup could not be created: '+e.message; } });
+    importBtn.addEventListener('click', function(){ file.click(); });
+    file.addEventListener('change', function(){
+      var chosen=file.files && file.files[0]; if(!chosen) return;
+      if(chosen.size>15*1024*1024){ status.textContent='This backup is larger than 15 MB and was not imported.'; file.value=''; return; }
+      var reader=new FileReader();
+      reader.onload=function(){
+        try {
+          var data=JSON.parse(String(reader.result||'')); var keys=validateBackup(data);
+          var msg='Restore '+keys.length+' data section(s) from backup dated '+(data.createdAt||'unknown date')+'? A safety copy of current records will be downloaded first. The app will reload after restore.';
+          if(!window.confirm(msg)) { status.textContent='Restore cancelled. Existing records were not changed.'; file.value=''; return; }
+          var safety=makeBackup(); downloadJson(safety,'White-Lion-Pre-Restore-Safety-Copy-'+safety.createdAt.slice(0,10)+'.json');
+          keys.forEach(function(key){ localStorage.setItem(key, JSON.stringify(data.appData[key])); });
+          status.textContent='Restore complete. Reloading the portal…';
+          setTimeout(function(){ window.location.reload(); }, 900);
+        } catch(e) { status.textContent='Restore stopped: '+(e && e.message ? e.message : 'Could not read the backup.'); }
+        file.value='';
+      };
+      reader.onerror=function(){ status.textContent='Could not read this file. Try selecting the backup again.'; file.value=''; };
+      reader.readAsText(chosen);
+    });
+    refreshStatus();
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', launch); else launch();
+})();
+</script>
+
+
+<script>
+/* White Lion Professional Edition: install offline app shell when hosted over HTTPS. */
+if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) {
+  window.addEventListener('load', function () {
+    navigator.serviceWorker.register(new URL('sw.js', document.baseURI), {scope: new URL('.', document.baseURI).pathname})
+      .catch(function (err) { console.warn('Offline caching could not be enabled:', err); });
+  });
+}
+</script>
+
+</body>
+</html>
