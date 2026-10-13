@@ -389,7 +389,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
 .card { border-color:#e0e6ef; }
 input, select, textarea { max-width:100%; }
 .table-wrap { max-width:100%; }
-#wl-safety-launcher { position:fixed; z-index:10001; right:16px; bottom:16px; border:1px solid #e2b455; border-radius:999px; background:#102947; color:#fff; padding:12px 16px; font-weight:800; box-shadow:0 8px 28px #07162938; cursor:pointer; display:flex; align-items:center; gap:8px; font-size:13px; }
+#wl-safety-launcher { position:fixed; z-index:10001; right:16px; bottom:calc(76px + env(safe-area-inset-bottom, 0px)); border:1px solid #e2b455; border-radius:999px; background:#102947; color:#fff; padding:12px 16px; font-weight:800; box-shadow:0 8px 28px #07162938; cursor:pointer; display:flex; align-items:center; gap:8px; font-size:13px; }
 #wl-safety-launcher:hover { background:#193c64; }
 #wl-safety-overlay { position:fixed; inset:0; z-index:10002; background:rgba(5,16,31,.62); display:none; align-items:center; justify-content:center; padding:14px; }
 #wl-safety-panel { width:min(580px,100%); max-height:90vh; overflow:auto; background:#fff; color:#172033; border-radius:18px; border:1px solid #dfe5ed; box-shadow:0 24px 80px #0004; padding:22px; font-family:system-ui,-apple-system,sans-serif; }
@@ -402,7 +402,7 @@ input, select, textarea { max-width:100%; }
 #wl-safety-panel .wl-note { padding:11px 12px; border-radius:10px; background:#fbf4e3; border:1px solid #eed9a8; color:#674b12; }
 #wl-safety-panel .wl-status { padding:10px 12px; background:#eef3f8; border-radius:10px; color:#193451; }
 #wl-safety-panel input[type=file] { width:100%; margin-top:6px; font-size:13px; }
-@media(max-width:520px) { #wl-safety-launcher { right:10px; bottom:10px; padding:11px 13px; } #wl-safety-panel { padding:17px; } }
+@media(max-width:520px) { #wl-safety-launcher { right:10px; bottom:calc(68px + env(safe-area-inset-bottom, 0px)); padding:11px 13px; } #wl-safety-panel { padding:17px; } }
 @media print { #wl-safety-launcher, #wl-safety-overlay { display:none !important; } }
 
 </style>
