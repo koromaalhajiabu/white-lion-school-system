@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#102947">
+<title>White Lion — Cloud Connection Check v2</title>
+<style>
+:root{color-scheme:light;--navy:#102947;--gold:#b88a2b;--bg:#f3f5f9;--line:#dce3ed;--ink:#172033;--muted:#5b6980}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,Arial,sans-serif}.wrap{max-width:760px;margin:0 auto;padding:22px 15px 40px}.hero{background:var(--navy);color:white;padding:22px;border-radius:16px;border-bottom:4px solid var(--gold)}h1{font-size:23px;margin:0 0 5px}.hero p{margin:0;color:#dbe5f8}.card{background:white;border:1px solid var(--line);border-radius:13px;padding:18px;margin-top:15px}h2{font-size:17px;margin:0 0 12px}.field{display:block;margin:12px 0 5px;font-weight:650;font-size:13px}input{width:100%;padding:12px;border:1px solid #bac7d8;border-radius:8px;font:inherit}button{padding:11px 14px;border:0;border-radius:8px;background:var(--navy);color:white;font-weight:700;cursor:pointer;margin:8px 7px 0 0}button.secondary{background:#edf1f7;color:var(--navy);border:1px solid var(--line)}button:disabled{opacity:.5}.status{padding:10px 12px;border-radius:8px;background:#f0f3f8;margin:8px 0;overflow-wrap:anywhere}.ok{background:#e1f6ed;color:#075b40}.bad{background:#ffeded;color:#8c2020}.warn{background:#fff4d9;color:#744800}small{color:var(--muted)}ul{padding-left:20px}#log{white-space:pre-wrap;overflow-wrap:anywhere;font:12px/1.5 ui-monospace,monospace}.note{font-size:13px;color:var(--muted)}a{color:#164e91}
+</style>
+</head>
+<body><div class="wrap">
+<section class="hero"><h1>White Lion Cloud Connection Check</h1><p>Version 2 · Diagnostic only — no school data is uploaded, edited, or deleted.</p></section>
+<section class="card"><h2>1. Sign in as the authorized developer</h2>
+<label class="field" for="email">Developer email</label><input id="email" type="email" autocomplete="username" value="koromaalhajiabu0@gmail.com">
+<label class="field" for="password">Supabase account password</label><input id="password" type="password" autocomplete="current-password" placeholder="Enter password here; not saved by this page">
+<button id="signin">Sign in and test</button><button id="signout" class="secondary" disabled>Sign out</button>
+<p class="note">Uses the project's public publishable key. Never enter a service-role or secret key on this page.</p><div id="auth" class="status">Not signed in.</div></section>
+<section class="card"><h2>2. Connection checks</h2><div id="checks"><div class="status">Waiting for sign-in.</div></div><button id="retest" class="secondary" disabled>Run checks again</button></section>
+<section class="card"><h2>What this page checks</h2><ul><li>Supabase connection and authenticated session.</li><li>Developer authorization through <code>public.is_developer()</code>.</li><li>Read permission and exact row count for the four known school tables.</li><li>It does not write, delete, change permissions, or activate synchronization.</li></ul><p class="note">A successful read does not prove that inserts, updates, deletes, or the full application workflow work. Counts are exact read-only counts returned by Supabase.</p></section>
+<section class="card"><h2>Diagnostic log</h2><div id="log">No checks run yet.</div></section>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+(function(){
+'use strict';
+const URL='https://homvrbxfwacopbnhujyg.supabase.co';
+const KEY='sb_publishable_lZ5BEN5-tgGA6PTXYi-Orw_1B_c1t6d';
+const $=id=>document.getElementById(id);
+if(!window.supabase){$('auth').className='status bad';$('auth').textContent='Supabase library did not load. Check your internet connection and reload.';return}
+const client=window.supabase.createClient(URL,KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
+function item(label,state,detail){const d=document.createElement('div');d.className='status '+state;d.textContent=label+': '+detail;$('checks').appendChild(d)}
+function log(s){$('log').textContent=new Date().toLocaleString()+'\n'+s+'\n'+$('log').textContent}
+async function runChecks(){
+$('checks').replaceChildren();$('retest').disabled=true;
+try{
+const {data:{session},error:sessionError}=await client.auth.getSession();
+if(sessionError||!session){item('Session','bad',sessionError?sessionError.message:'No active session. Sign in first.');return}
+$('auth').className='status ok';$('auth').textContent='Signed in as '+session.user.email;
+item('Session','ok','Authenticated session found.');
+const {data:devData,error:devError}=await client.rpc('is_developer');
+if(devError){item('Developer authorization','bad',devError.message);log('RPC is_developer failed: '+devError.message)}
+else if(devData!==true){item('Developer authorization','bad','RPC returned '+JSON.stringify(devData)+'. No data changed.');log('is_developer returned '+JSON.stringify(devData))}
+else{item('Developer authorization','ok','Verified.');log('is_developer passed.')}
+for(const table of ['wl_students','wl_attendance','wl_grades','wl_fees']){
+try{
+const {count,error}=await client.from(table).select('*',{count:'exact',head:true});
+if(error){item(table,'bad',error.message);log(table+' read check failed: '+error.message)}
+else{item(table,'ok','Read permission confirmed. Exact visible row count: '+count+'.');log(table+' exact count: '+count)}
+}catch(e){item(table,'bad',e.message||String(e));log(table+' threw an error: '+(e.message||String(e)))}
+}
+$('retest').disabled=false;
+}catch(e){item('Unexpected check error','bad',e.message||String(e));log('Unexpected check error: '+(e.message||String(e)));$('retest').disabled=false}
+}
+$('signin').addEventListener('click',async()=>{
+$('signin').disabled=true;$('auth').className='status warn';$('auth').textContent='Signing in and checking…';
+try{const {data,error}=await client.auth.signInWithPassword({email:$('email').value.trim(),password:$('password').value});
+$('password').value='';
+if(error){$('auth').className='status bad';$('auth').textContent='Sign-in failed: '+error.message;log('Sign-in failed: '+error.message);return}
+$('signout').disabled=false;log('Signed in as '+data.user.email);await runChecks();
+}catch(e){$('auth').className='status bad';$('auth').textContent='Error: '+(e.message||String(e));log('Unexpected error: '+(e.message||String(e)))}
+finally{$('signin').disabled=false}
+});
+$('retest').addEventListener('click',runChecks);
+$('signout').addEventListener('click',async()=>{const {error}=await client.auth.signOut();$('auth').className='status';$('auth').textContent=error?'Sign-out error: '+error.message:'Signed out.';$('checks').replaceChildren();item('Session','warn','Signed out.');$('signout').disabled=true;$('retest').disabled=true;log(error?'Sign-out failed: '+error.message:'Signed out.')});
+client.auth.getSession().then(({data})=>{if(data.session){$('signout').disabled=false;runChecks()}});
+})();
+</script></body></html>
