@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#102947">
+<title>White Lion | Cloud Safety & Sync Preparation</title>
+<style>
+:root{font-family:system-ui,-apple-system,Segoe UI,sans-serif;color:#172b45;background:#f2f5f9}*{box-sizing:border-box}body{margin:0;padding:18px}.wrap{max-width:760px;margin:0 auto}.card{background:#fff;border:1px solid #dce4ee;border-radius:16px;padding:clamp(18px,4vw,30px);margin:14px 0;box-shadow:0 8px 24px #1029470b}h1{font-size:1.55rem;margin:.25em 0}.muted{color:#607086;line-height:1.5}.status{padding:12px;border-radius:9px;background:#fff5df;color:#6e4c00;line-height:1.45}.tag{display:inline-block;background:#e7f4ec;color:#17613a;padding:4px 9px;border-radius:20px;font-size:.8rem;font-weight:700}button,a.btn{display:inline-block;margin:8px 6px 0 0;padding:11px 14px;border:0;border-radius:9px;background:#123d72;color:#fff;text-decoration:none;font:inherit;font-weight:650;cursor:pointer}button.secondary,a.secondary{background:#e9eef5;color:#183452}.hidden{display:none}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px}.metric{padding:12px;background:#f5f7fb;border-radius:10px}.metric b{display:block;font-size:1.35rem}.small{font-size:.9rem}code{overflow-wrap:anywhere}
+</style>
+</head>
+<body><main class="wrap">
+<a href="./">← Developer Control Panel</a>
+<section class="card"><span class="tag">SAFETY FIRST</span><h1>Cloud Safety & Sync Preparation</h1>
+<p class="muted">This tool checks cloud access and prepares a portable copy of records stored in this browser. It does not upload, overwrite, or delete school records.</p>
+<div id="status" class="status" role="status">Connecting securely to White Lion cloud…</div>
+<div id="loginbox" class="hidden"><form id="login"><label>Email <input id="email" type="email" value="koromaalhajiabu0@gmail.com" required autocomplete="username"></label><p><label>Password <input id="password" type="password" required autocomplete="current-password" style="width:100%;padding:12px"></label></p><button>Sign in as developer</button></form></div>
+<div id="panel" class="hidden"><p id="who" class="muted"></p><div class="grid"><div class="metric">Local student records<b id="students">—</b></div><div class="metric">Local data sections<b id="sections">—</b></div><div class="metric">Cloud student rows<b id="cloudstudents">Checking…</b></div><div class="metric">Cloud tables<b id="cloudtables">Checking…</b></div></div>
+<p><button id="backup">Download local safety backup</button><button id="refresh" class="secondary">Recheck cloud status</button></p><p id="result" class="muted small" role="status"></p>
+<h3>What happens next</h3><ol><li>Keep a separate JSON backup of this device.</li><li>Confirm exact cloud columns and access rules.</li><li>Only then enable a reviewed, duplicate-safe sync with a preview before any upload.</li></ol>
+<p class="status">Cloud sync remains disabled in this page. Nothing is automatically uploaded. Do not use restore or import as a substitute for syncing.</p>
+<button id="signout" class="secondary">Sign out</button></div>
+</section>
+<section class="card"><h2>Open related pages</h2><p><a class="btn secondary" href="../professional/">School portal</a><a class="btn secondary" href="./">Developer panel</a><a class="btn secondary" href="https://github.com/koromaalhajiabu/white-lion-school-system/pull/10">Review code changes</a></p><p class="muted small">Never place a Supabase service-role or secret key in browser code or GitHub. This page uses only the project's public publishable key and checks developer authorization.</p></section>
+</main>
+<script type="module">
+const PROJECT_URL="https://homvrbxfwacopbnhujyg.supabase.co";
+const PUBLIC_KEY="sb_publishable_lZ5BEN5-tgGA6PTXYi-Orw_1B_c1t6d";
+const OWNER="koromaalhajiabu0@gmail.com";
+const KEYS={wlt_students:"array",wlt_attendance_v2:"object",wlt_grades:"array",wlt_fees:"array",wlt_settings:"object",wlt_notices:"array"};
+const $=id=>document.getElementById(id);let client=null;
+function say(t,bad=false){$("status").textContent=t;$("status").style.background=bad?"#fdeaea":"#fff5df";$("status").style.color=bad?"#8a1c1c":"#6e4c00"}
+function localSnapshot(){const data={};for(const [k,type] of Object.entries(KEYS)){try{const raw=localStorage.getItem(k);if(raw!==null){const v=JSON.parse(raw);if((type==="array"&&!Array.isArray(v))||(type==="object"&&(v===null||typeof v!=="object"||Array.isArray(v))))continue;data[k]=v}}catch(e){}}return data}
+function backup(){const appData=localSnapshot();const pack={app:"White Lion School Management System",kind:"local-safety-backup",version:1,createdAt:new Date().toISOString(),appData};const blob=new Blob([JSON.stringify(pack,null,2)],{type:"application/json"});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download="White-Lion-Safety-Backup-"+new Date().toISOString().slice(0,10)+".json";document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1500);$("result").textContent="Backup generated from "+Object.keys(appData).length+" local data sections. Keep this file separate. No data was uploaded or changed."}
+async function refresh(){const d=localSnapshot();$("students").textContent=Array.isArray(d.wlt_students)?d.wlt_students.length:"Not found";$("sections").textContent=Object.keys(d).length;
+let count=0,good=0;for(const table of ["wl_students","wl_attendance","wl_grades","wl_fees"]){try{const {count:n,error}=await client.from(table).select("*",{count:"exact",head:true});if(error)throw error;if(table==="wl_students")$("cloudstudents").textContent=String(n??0);good++;count++}catch(e){if(table==="wl_students")$("cloudstudents").textContent="Blocked";}}
+$("cloudtables").textContent=good+" / 4 readable";$("result").textContent=good===4?"Read-only cloud count checks passed. No rows were fetched or changed.":"Some cloud count checks were blocked by current database permissions. This is expected until reviewed access policies are applied."; }
+async function verify(user){if(!user||user.email?.toLowerCase()!==OWNER) return false;const {data,error}=await client.rpc("is_developer");if(error)throw error;return data===true}
+function show(user){$("loginbox").classList.add("hidden");$("panel").classList.remove("hidden");$("who").textContent="Developer authorization verified for "+user.email;say("Developer verified. Read-only checks only; cloud uploads are disabled.");refresh().catch(()=>say("Could not complete cloud checks. Local records remain unchanged.",true))}
+async function signIn(user){try{if(!await verify(user)){await client.auth.signOut();say("Access denied: developer authorization could not be verified.",true);return}show(user)}catch(e){await client.auth.signOut();say("Could not verify developer access. No data was changed.",true)}}
+try{const {createClient}=await import("https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm");client=createClient(PROJECT_URL,PUBLIC_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});const {data:{session}}=await client.auth.getSession();if(session?.user)await signIn(session.user);else{$("loginbox").classList.remove("hidden");say("Cloud connected. Sign in to run developer-only checks.")}}catch(e){$("loginbox").classList.remove("hidden");say("Could not connect. Check internet and cloud configuration.",true)}
+$("login").addEventListener("submit",async e=>{e.preventDefault();const {data,error}=await client.auth.signInWithPassword({email:$("email").value.trim(),password:$("password").value});if(error){say("Sign-in failed. Check the developer account and password.",true);return}await signIn(data.user);$("password").value=""});
+$("backup").addEventListener("click",backup);$("refresh").addEventListener("click",()=>refresh().catch(()=>say("Cloud check failed; local records were not changed.",true)));$("signout").addEventListener("click",async()=>{await client.auth.signOut();$("panel").classList.add("hidden");$("loginbox").classList.remove("hidden");say("Signed out. No records were changed.")});
+</script></body></html>
