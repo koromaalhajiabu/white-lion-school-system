@@ -17,7 +17,23 @@
 <label for="password">Password</label><input id="password" type="password" autocomplete="current-password" required>
 <button type="submit">Sign in securely</button>
 </form>
-<section id="panel" class="hidden"><h2>Developer access verified</h2><p id="signedin" class="muted"></p><p class="muted">Authentication is active. Sensitive database operations must still be protected by Supabase Row Level Security and server-side policies before controls are enabled.</p><button id="signout" class="secondary" type="button">Sign out</button></section>
+<section id="panel" class="hidden">
+<h2>Developer access verified</h2><p id="signedin" class="muted"></p>
+<div style="border:1px solid #dce4ee;border-radius:12px;padding:14px;margin:18px 0;background:#f8fafc">
+<h3 style="margin:0 0 10px">System status</h3>
+<p style="margin:8px 0">Developer sign-in: <strong style="color:#17613a">Verified</strong></p>
+<p style="margin:8px 0">Authorization RPC: <strong id="rpcstatus">Checking…</strong></p>
+<p style="margin:8px 0">School records: <strong>Local device storage</strong></p>
+<p class="muted" style="margin:8px 0">Cloud synchronization is not enabled. Existing offline records remain on their device.</p>
+<button id="checkstatus" class="secondary" type="button">Recheck authorization</button>
+<p id="diagmessage" class="muted" role="status"></p>
+</div>
+<h3>Quick links</h3>
+<p><a href="../professional/">Open school portal</a></p>
+<p><a href="https://supabase.com/dashboard/project/homvrbxfwacopbnhujyg/project">Open Supabase project</a></p>
+<p><a href="https://github.com/koromaalhajiabu/white-lion-school-system">Open GitHub repository</a></p>
+<p class="muted">Database editing controls remain disabled until table permissions and row-level security policies are designed and tested.</p>
+<button id="signout" class="secondary" type="button">Sign out</button></section>
 <small>This page does not change school records or erase offline data. Configure the project URL and public anon/publishable key as described in <a href="SETUP.md">the setup guide</a>. Never put a Supabase service-role key in this page or in GitHub.</small>
 </main>
 <script type="module">
@@ -63,5 +79,21 @@ form.addEventListener("submit",async e=>{e.preventDefault();if(!client){showStat
  }catch(e){await denyAccess("Could not verify developer permissions. Access has been blocked.");return}
  showSignedIn(data.user);document.querySelector("#password").value="";
 });
+async function runAuthorizationCheck(){
+ const label=document.querySelector("#rpcstatus"),message=document.querySelector("#diagmessage");
+ label.textContent="Checking…";message.textContent="";
+ try{
+  const {data,error}=await client.rpc("is_developer");
+  if(error)throw error;
+  if(data!==true)throw new Error("Authorization check returned false.");
+  label.textContent="Passed";label.style.color="#17613a";
+  message.textContent="Supabase confirms this signed-in account is registered as a developer.";
+ }catch(e){
+  label.textContent="Failed";label.style.color="#8a1c1c";
+  message.textContent="Authorization could not be confirmed. Sign out and sign in again, or check the Supabase function and permissions.";
+ }
+}
+document.querySelector("#checkstatus").addEventListener("click",runAuthorizationCheck);
+const statusObserver=setInterval(()=>{if(!panel.classList.contains("hidden")){clearInterval(statusObserver);runAuthorizationCheck()}},250);
 document.querySelector("#signout").addEventListener("click",async()=>{if(client)await client.auth.signOut();signOutView();showStatus("You have signed out.")});
 </script></body></html>
