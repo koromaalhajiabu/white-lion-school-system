@@ -29,13 +29,28 @@ let client=null;
 function showStatus(message,isError=false){statusEl.textContent=message;statusEl.style.background=isError?"#fdeaea":"#fff5df";statusEl.style.color=isError?"#8a1c1c":"#6e4c00"}
 function showSignedIn(user){form.classList.add("hidden");panel.classList.remove("hidden");statusEl.classList.add("hidden");document.querySelector("#signedin").textContent="Signed in as "+user.email}
 function signOutView(){panel.classList.add("hidden");form.classList.remove("hidden");statusEl.classList.remove("hidden")}
+async function verifyDeveloper(user){
+ if(!user || user.email?.toLowerCase()!==OWNER_EMAIL) return false;
+ const {data,error}=await client.rpc("is_developer");
+ if(error) throw error;
+ return data===true;
+}
+async function denyAccess(message){
+ await client.auth.signOut();
+ signOutView();
+ showStatus(message,true);
+}
 if(!SUPABASE_ANON_KEY.startsWith("PASTE_")){
  try{
   const {createClient}=await import("https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm");
   client=createClient(PROJECT_URL,SUPABASE_ANON_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
   const {data:{session}}=await client.auth.getSession();
-  if(session?.user?.email?.toLowerCase()===OWNER_EMAIL)showSignedIn(session.user);
-  else {if(session)await client.auth.signOut();form.classList.remove("hidden");showStatus("Supabase connected. Only the allowlisted developer email is accepted.");}
+  if(session?.user){
+   try{
+    if(await verifyDeveloper(session.user)) showSignedIn(session.user);
+    else await denyAccess("Access denied. This account is not registered as a developer.");
+   }catch(e){await denyAccess("Could not verify developer permissions. Please try again later.");}
+  }else {form.classList.remove("hidden");showStatus("Supabase connected. Sign in to verify developer permissions.");}
  }catch(e){showStatus("Could not connect to Supabase. Check the project URL/key and internet connection.",true);form.classList.remove("hidden")}
 }else{form.classList.remove("hidden")}
 form.addEventListener("submit",async e=>{e.preventDefault();if(!client){showStatus("Setup required: add the public Supabase anon/publishable key in this file, then redeploy.",true);return}
@@ -43,7 +58,9 @@ form.addEventListener("submit",async e=>{e.preventDefault();if(!client){showStat
  if(email!==OWNER_EMAIL){showStatus("Access denied. This email is not authorized for the developer panel.",true);return}
  const {data,error}=await client.auth.signInWithPassword({email,password});
  if(error){showStatus("Sign-in failed. Check your credentials and Supabase Auth setup.",true);return}
- if(data.user?.email?.toLowerCase()!==OWNER_EMAIL){await client.auth.signOut();showStatus("Access denied.",true);return}
+ try{
+  if(!await verifyDeveloper(data.user)){await denyAccess("Access denied. This account is not registered as a developer.");return}
+ }catch(e){await denyAccess("Could not verify developer permissions. Access has been blocked.");return}
  showSignedIn(data.user);document.querySelector("#password").value="";
 });
 document.querySelector("#signout").addEventListener("click",async()=>{if(client)await client.auth.signOut();signOutView();showStatus("You have signed out.")});
